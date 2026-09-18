@@ -36,6 +36,9 @@ from app.modules.packing.router import router as packing_router
 from app.modules.shipments.router import router as shipments_router
 from app.modules.tna.router import router as tna_router
 from app.modules.reports.router import router as reports_router
+from app.core.security import get_password_hash
+from app.models.user import Role, User
+from app.db.session import SessionLocal
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -88,3 +91,30 @@ def root():
         "version": settings.APP_VERSION,
         "docs": "/docs",
     }
+
+
+@app.on_event("startup")
+def on_startup():
+    """Create tables and ensure the default admin user exists.
+
+    This makes deployments self-healing on platforms like Render where
+    migrations/seeding may not run automatically.
+    """
+    Base.metadata.create_all(bind=engine)
+    db = SessionLocal()
+    try:
+        if not db.query(User).filter(User.username == "admin").first():
+            db.add(
+                User(
+                    username="admin",
+                    email="admin@nextgen.com",
+                    full_name="System Administrator",
+                    hashed_password=get_password_hash("admin123"),
+                    role=Role.ADMIN,
+                    is_active=True,
+                )
+            )
+            db.commit()
+            print("--> Default admin user created (admin / admin123)")
+    finally:
+        db.close()

@@ -8,7 +8,7 @@ services:
     startCommand: alembic upgrade head && python seed.py && uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION
-        value: 3.13.5
+        value: 3.11.9
       - key: DATABASE_URL
         fromDatabase:
           name: nextgen-erp-db
@@ -16,7 +16,7 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: CORS_ORIGINS
-        value: '["https://nextgenmanagerui.onrender.com","https://nextgen-garment-erp.onrender.com","http://localhost:3000","http://localhost:5173"]'
+        value: '["https://bloom-works-garment-erp.vercel.app","https://bloomworks-garment-erp.onrender.com","http://localhost:3000","http://localhost:5173"]'
       - key: API_PREFIX
         value: /api
 
@@ -33,7 +33,7 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_API_URL
-        value: https://nextgenmanagerdb.onrender.com/api
+        value: https://bloomworks-garment-erp.onrender.com/api
 
 databases:
   - name: nextgen-erp-db

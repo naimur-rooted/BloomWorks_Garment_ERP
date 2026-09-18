@@ -14,7 +14,7 @@ class Settings(BaseSettings):
 
     DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/nextgen_erp"
 
-    CORS_ORIGINS: str = '["http://localhost:3000","http://localhost:5173","https://nextgenmanagerui.onrender.com","https://nextgenmanager.onrender.com"]'
+    CORS_ORIGINS: str = '["http://localhost:3000","http://localhost:5173","https://bloom-works-garment-erp.vercel.app","https://bloomworks-garment-erp.onrender.com"]'
 
     FRONTEND_URL: str = "http://localhost:3000"
 
