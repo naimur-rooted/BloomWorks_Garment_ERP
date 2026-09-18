@@ -52,7 +52,7 @@ export default function Requisitions() {
       <DataTable columns={columns} data={data} loading={loading} addLabel="Create Requisition" onAdd={() => setIsOpen(true)} />
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="Create Purchase Requisition">
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <input className="input" placeholder="PR Number *" required value={form.pr_number} onChange={(e) => setForm({ ...form, pr_number: e.target.value })} />
             <select className="input" value={form.order_id} onChange={(e) => setForm({ ...form, order_id: e.target.value })}>
               <option value="">Select Order...</option>
@@ -64,8 +64,8 @@ export default function Requisitions() {
 
           <div className="border-t pt-4">
             <h3 className="text-sm font-semibold mb-2">Requisition Items</h3>
-            <div className="grid grid-cols-4 gap-2 mb-2">
-              <select className="input col-span-2" value={itemForm.material_id} onChange={(e) => setItemForm({ ...itemForm, material_id: e.target.value })}>
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 mb-2">
+              <select className="input sm:col-span-2" value={itemForm.material_id} onChange={(e) => setItemForm({ ...itemForm, material_id: e.target.value })}>
                 <option value="">Select Material...</option>
                 {materials.map((m) => <option key={m.id} value={m.id}>{m.code} - {m.name}</option>)}
               </select>

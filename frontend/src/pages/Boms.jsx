@@ -73,7 +73,7 @@ export default function Boms() {
       <DataTable columns={columns} data={data} loading={loading} addLabel="Create BOM" onAdd={() => setIsOpen(true)} />
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="Create Garment BOM">
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <input className="input" placeholder="BOM Name *" required value={form.bom_name} onChange={(e) => setForm({ ...form, bom_name: e.target.value })} />
             <select className="input" required value={form.style_id} onChange={(e) => setForm({ ...form, style_id: e.target.value })}>
               <option value="">Select Style...</option>
@@ -84,8 +84,8 @@ export default function Boms() {
 
           <div className="border-t pt-4">
             <h3 className="text-sm font-semibold mb-2">BOM Items</h3>
-            <div className="grid grid-cols-5 gap-2 mb-2">
-              <select className="input col-span-2" value={itemForm.material_id} onChange={(e) => setItemForm({ ...itemForm, material_id: e.target.value })}>
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-2">
+              <select className="input sm:col-span-2" value={itemForm.material_id} onChange={(e) => setItemForm({ ...itemForm, material_id: e.target.value })}>
                 <option value="">Select Material...</option>
                 {materials.map((m) => <option key={m.id} value={m.id}>{m.code} - {m.name}</option>)}
               </select>

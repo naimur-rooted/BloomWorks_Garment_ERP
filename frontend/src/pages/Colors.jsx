@@ -42,10 +42,10 @@ export default function Colors() {
     <div>
       <DataTable columns={columns} data={data} loading={loading} addLabel="Add Color" onAdd={() => setIsOpen(true)} />
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="Add Color">
-        <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <input className="input" placeholder="Name *" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
           <input className="input" placeholder="Code" value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value })} />
-          <input className="input col-span-2" placeholder="Hex Code (e.g. #000000)" value={form.hex_code} onChange={(e) => setForm({ ...form, hex_code: e.target.value })} />
+          <input className="input sm:col-span-2" placeholder="Hex Code (e.g. #000000)" value={form.hex_code} onChange={(e) => setForm({ ...form, hex_code: e.target.value })} />
           <div className="col-span-2 flex justify-end gap-2">
             <button type="button" onClick={() => setIsOpen(false)} className="btn-secondary">Cancel</button>
             <button type="submit" className="btn-primary">Save</button>

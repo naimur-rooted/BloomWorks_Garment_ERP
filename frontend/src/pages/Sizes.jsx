@@ -33,7 +33,7 @@ export default function Sizes() {
     <div>
       <DataTable columns={columns} data={data} loading={loading} addLabel="Add Size" onAdd={() => setIsOpen(true)} />
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="Add Size">
-        <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <input className="input" placeholder="Size Name * (e.g. S)" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
           <input className="input" placeholder="Code" value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value })} />
           <input className="input" placeholder="Sort Order" type="number" value={form.sort_order} onChange={(e) => setForm({ ...form, sort_order: e.target.value })} />

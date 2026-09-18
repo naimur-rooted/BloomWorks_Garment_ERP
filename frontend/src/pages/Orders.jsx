@@ -83,7 +83,7 @@ export default function Orders() {
       <DataTable columns={columns} data={data} loading={loading} addLabel="Create Order" onAdd={() => setIsOpen(true)} />
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="Create Buyer Order">
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <input className="input" placeholder="PO Number *" required value={form.po_number} onChange={(e) => setForm({ ...form, po_number: e.target.value })} />
             <select className="input" required value={form.buyer_id} onChange={(e) => setForm({ ...form, buyer_id: e.target.value })}>
               <option value="">Select Buyer...</option>
@@ -100,8 +100,8 @@ export default function Orders() {
 
           <div className="border-t pt-4">
             <h3 className="text-sm font-semibold mb-2">Order Items</h3>
-            <div className="grid grid-cols-4 gap-2 mb-2">
-              <select className="input col-span-2" value={itemForm.style_variant_id} onChange={(e) => setItemForm({ ...itemForm, style_variant_id: e.target.value })}>
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 mb-2">
+              <select className="input sm:col-span-2" value={itemForm.style_variant_id} onChange={(e) => setItemForm({ ...itemForm, style_variant_id: e.target.value })}>
                 <option value="">Select Variant...</option>
                 {variants.map((v) => <option key={v.id} value={v.id}>{v.variant_code}</option>)}
               </select>

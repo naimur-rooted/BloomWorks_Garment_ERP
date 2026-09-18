@@ -41,7 +41,7 @@ export default function Materials() {
     <div>
       <DataTable columns={columns} data={data} loading={loading} addLabel="Add Material" onAdd={() => setIsOpen(true)} />
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="Add Material">
-        <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <input className="input" placeholder="Code *" required value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value })} />
           <input className="input" placeholder="Name *" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
           <select className="input" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>

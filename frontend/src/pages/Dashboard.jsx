@@ -36,7 +36,7 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       {/* Role Banner */}
-      <div className="bg-gradient-to-r from-blue-900 to-indigo-800 text-white p-4 rounded-lg shadow flex justify-between items-center">
+      <div className="bg-gradient-to-r from-blue-900 to-indigo-800 text-white p-4 rounded-lg shadow flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
         <div>
           <h2 className="text-xl font-bold">BloomWorks Garments Ltd. — Factory ERP</h2>
           <p className="text-xs text-blue-200 mt-0.5">
@@ -105,7 +105,7 @@ export default function Dashboard() {
               </div>
               <span className="text-xs text-gray-500 font-medium">Style: NG-POLO-001 (10,000 Pcs)</span>
             </div>
-            <div className="grid grid-cols-5 gap-2 text-center text-xs font-semibold mt-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 text-center text-xs font-semibold mt-3">
               <div className="p-2 bg-white rounded border border-green-200 text-green-700">
                 1. Order & BOM
                 <p className="text-[10px] text-gray-500 font-normal">Confirmed</p>
@@ -130,7 +130,8 @@ export default function Dashboard() {
           </div>
 
           <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Order Line Details</h3>
-          <table className="w-full text-xs">
+          <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+          <table className="w-full text-xs min-w-[480px]">
             <thead>
               <tr className="text-left text-gray-500 border-b bg-gray-50">
                 <th className="py-2 px-2">PO Number</th>
@@ -154,6 +155,7 @@ export default function Dashboard() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
 
         {/* Inventory Stock & Production Pipeline */}

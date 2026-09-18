@@ -43,14 +43,14 @@ export default function Suppliers() {
         onAdd={() => setIsOpen(true)}
       />
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="Add Supplier">
-        <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <input className="input" placeholder="Code *" required value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value })} />
           <input className="input" placeholder="Name *" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
           <input className="input" placeholder="Contact Person" value={form.contact_person} onChange={(e) => setForm({ ...form, contact_person: e.target.value })} />
           <input className="input" placeholder="Email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
           <input className="input" placeholder="Phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
           <input className="input" placeholder="Payment Terms" value={form.payment_terms} onChange={(e) => setForm({ ...form, payment_terms: e.target.value })} />
-          <input className="input col-span-2" placeholder="Address" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
+          <input className="input sm:col-span-2" placeholder="Address" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
           <div className="col-span-2 flex justify-end gap-2">
             <button type="button" onClick={() => setIsOpen(false)} className="btn-secondary">Cancel</button>
             <button type="submit" className="btn-primary">Save</button>

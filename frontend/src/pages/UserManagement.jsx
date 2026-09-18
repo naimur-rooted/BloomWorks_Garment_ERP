@@ -174,7 +174,7 @@ export default function UserManagement() {
         <div className="flex flex-wrap items-center gap-3">
           <input
             type="text"
-            className="input w-64 text-sm"
+            className="input w-full sm:w-64 text-sm"
             placeholder="Search by name, username, email..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -223,7 +223,7 @@ export default function UserManagement() {
         title="Provision Employee ERP Account"
       >
         <form onSubmit={handleCreate} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1">Full Name *</label>
               <input
@@ -302,7 +302,7 @@ export default function UserManagement() {
         title={`Edit Account: ${selectedUser?.username}`}
       >
         <form onSubmit={handleEdit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1">Full Name</label>
               <input

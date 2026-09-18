@@ -9,24 +9,24 @@ export default function DataTable({ columns, data, onAdd, addLabel, searchPlaceh
 
   return (
     <div className="bg-white rounded-lg shadow">
-      <div className="flex items-center justify-between p-4 border-b">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:justify-between p-4 border-b">
         <input
           type="text"
           placeholder={searchPlaceholder || 'Search...'}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="max-w-xs w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="max-w-full sm:max-w-xs w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         {addLabel && (
           <button
             onClick={onAdd}
-            className="px-4 py-2 rounded-md bg-blue-600 text-white text-sm font-medium hover:bg-blue-700"
+            className="px-4 py-2 rounded-md bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 w-full sm:w-auto"
           >
             {addLabel}
           </button>
         )}
       </div>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto -mx-4 sm:mx-0">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>

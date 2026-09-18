@@ -44,13 +44,13 @@ export default function Styles() {
     <div>
       <DataTable columns={columns} data={data} loading={loading} addLabel="Add Style" onAdd={() => setIsOpen(true)} />
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="Add Style">
-        <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <input className="input" placeholder="Style No * (e.g. TSHIRT-001)" required value={form.style_no} onChange={(e) => setForm({ ...form, style_no: e.target.value })} />
           <select className="input" value={form.buyer_id} onChange={(e) => setForm({ ...form, buyer_id: e.target.value })}>
             <option value="">Select Buyer...</option>
             {buyers.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
           </select>
-          <input className="input col-span-2" placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+          <input className="input sm:col-span-2" placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
           <input className="input" placeholder="Category (e.g. T-Shirt, Polo)" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
           <div className="col-span-2 flex justify-end gap-2">
             <button type="button" onClick={() => setIsOpen(false)} className="btn-secondary">Cancel</button>
