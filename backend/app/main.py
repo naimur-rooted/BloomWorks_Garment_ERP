@@ -100,26 +100,25 @@ def root():
 
 @app.on_event("startup")
 def on_startup():
-    """Create tables and ensure the default admin user exists.
-
-    This makes deployments self-healing on platforms like Render where
-    migrations/seeding may not run automatically.
-    """
-    Base.metadata.create_all(bind=engine)
-    db = SessionLocal()
+    """Create tables and ensure the default admin user exists."""
     try:
-        if not db.query(User).filter(User.username == "admin").first():
-            db.add(
-                User(
-                    username="admin",
-                    email="admin@nextgen.com",
-                    full_name="System Administrator",
-                    hashed_password=get_password_hash("admin123"),
-                    role=Role.ADMIN,
-                    is_active=True,
+        Base.metadata.create_all(bind=engine)
+        db = SessionLocal()
+        try:
+            if not db.query(User).filter(User.username == "admin").first():
+                db.add(
+                    User(
+                        username="admin",
+                        email="admin@nextgen.com",
+                        full_name="System Administrator",
+                        hashed_password=get_password_hash("admin123"),
+                        role=Role.ADMIN,
+                        is_active=True,
+                    )
                 )
-            )
-            db.commit()
-            print("--> Default admin user created (admin / admin123)")
-    finally:
-        db.close()
+                db.commit()
+                print("--> Default admin user created (admin / admin123)")
+        finally:
+            db.close()
+    except Exception as e:
+        print(f"[Startup Warning] Could not automatically initialize database/admin: {e}")

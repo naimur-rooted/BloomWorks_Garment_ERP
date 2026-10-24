@@ -20,7 +20,11 @@ export default function Login() {
       await login(username, password)
       navigate('/')
     } catch (err) {
-      setError(err.response?.data?.detail || 'Invalid username or password')
+      if (err.code === 'ECONNABORTED' || err.message?.includes('timeout') || err.message?.includes('Network Error')) {
+        setError('Backend server took too long to respond. The free cloud host may be starting up or offline. Please retry in a few moments.')
+      } else {
+        setError(err.response?.data?.detail || 'Invalid username or password')
+      }
     } finally {
       setLoading(false)
     }

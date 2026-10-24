@@ -16,6 +16,13 @@ class Settings(BaseSettings):
     MONGODB_URL: str | None = None
     MONGODB_DB_NAME: str = "garment_erp"
 
+    @property
+    def sync_database_url(self) -> str:
+        url = self.DATABASE_URL
+        if url.startswith("postgres://"):
+            return url.replace("postgres://", "postgresql://", 1)
+        return url
+
     CORS_ORIGINS: str = '["http://localhost:3000","http://localhost:5173","https://bloom-works-garment-erp.vercel.app","https://bloomworks-garment-erp.onrender.com"]'
 
     FRONTEND_URL: str = "http://localhost:3000"

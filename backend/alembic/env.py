@@ -11,7 +11,11 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+raw_url = settings.sync_database_url if hasattr(settings, "sync_database_url") else settings.DATABASE_URL
+if raw_url.startswith("postgres://"):
+    raw_url = raw_url.replace("postgres://", "postgresql://", 1)
+
+config.set_main_option("sqlalchemy.url", raw_url)
 
 target_metadata = Base.metadata
 
