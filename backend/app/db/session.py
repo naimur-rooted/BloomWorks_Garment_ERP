@@ -24,7 +24,19 @@ engine = create_engine(
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
+_tables_initialized = False
+
+
 def get_db():
+    global _tables_initialized
+    if not _tables_initialized:
+        try:
+            from app.db.base import Base
+            Base.metadata.create_all(bind=engine)
+            _tables_initialized = True
+        except Exception as e:
+            print(f"[DB Init Notice] {e}")
+            _tables_initialized = True
     db: Session = SessionLocal()
     try:
         yield db
