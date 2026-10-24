@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24
 
-    DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/nextgen_erp"
+    DATABASE_URL: str = "sqlite:///./garment_erp.db"
     MONGODB_URL: str | None = None
     MONGODB_DB_NAME: str = "garment_erp"
 

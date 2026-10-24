@@ -1,10 +1,11 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user
 from app.core.config import settings
 from app.db.base import Base
-from app.db.session import engine
+from app.db.session import engine, get_db
 from app.models import *  # noqa: F401, E402
 from app.modules.auth.router import router as auth_router
 from app.modules.buyers.router import router as buyers_router
@@ -99,6 +100,25 @@ def root():
         "status": "online",
         "docs": "/docs",
     }
+
+
+@app.get("/api/health")
+def health(db: Session = Depends(get_db)):
+    try:
+        from app.models.user import User
+        count = db.query(User).count()
+        return {
+            "status": "ok",
+            "database": "connected",
+            "users_count": count,
+            "engine": str(engine.url).split("@")[-1],
+        }
+    except Exception as e:
+        return {
+            "status": "warning",
+            "db_error": str(e),
+            "engine": str(engine.url).split("@")[-1],
+        }
 
 
 @app.on_event("startup")
