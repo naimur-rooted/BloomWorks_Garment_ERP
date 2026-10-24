@@ -13,7 +13,9 @@ if config.config_file_name is not None:
 
 raw_url = settings.sync_database_url if hasattr(settings, "sync_database_url") else settings.DATABASE_URL
 if raw_url.startswith("postgres://"):
-    raw_url = raw_url.replace("postgres://", "postgresql://", 1)
+    raw_url = raw_url.replace("postgres://", "postgresql+psycopg://", 1)
+elif raw_url.startswith("postgresql://") and not raw_url.startswith("postgresql+"):
+    raw_url = raw_url.replace("postgresql://", "postgresql+psycopg://", 1)
 
 config.set_main_option("sqlalchemy.url", raw_url)
 
