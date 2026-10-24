@@ -39,6 +39,10 @@ const getNavSections = (role) => {
     {
       title: 'Overview',
       dot: 'bg-blue-500',
+      text: 'text-blue-700 dark:text-blue-300',
+      bg: 'bg-blue-50/90 dark:bg-blue-950/40',
+      border: 'border-blue-200/90 dark:border-blue-800/60',
+      badge: 'bg-blue-100 text-blue-700 dark:bg-blue-900/60 dark:text-blue-300',
       items: [{ to: '/', label: 'Executive Dashboard', icon: LayoutDashboard }],
     },
   ]
@@ -48,6 +52,10 @@ const getNavSections = (role) => {
     sections.push({
       title: 'Administration',
       dot: 'bg-purple-500',
+      text: 'text-purple-700 dark:text-purple-300',
+      bg: 'bg-purple-50/90 dark:bg-purple-950/40',
+      border: 'border-purple-200/90 dark:border-purple-800/60',
+      badge: 'bg-purple-100 text-purple-700 dark:bg-purple-900/60 dark:text-purple-300',
       items: [{ to: '/users', label: 'User Directory', icon: UserCog }],
     })
   }
@@ -57,6 +65,10 @@ const getNavSections = (role) => {
     sections.push({
       title: 'Master Specifications',
       dot: 'bg-emerald-500',
+      text: 'text-emerald-700 dark:text-emerald-300',
+      bg: 'bg-emerald-50/90 dark:bg-emerald-950/40',
+      border: 'border-emerald-200/90 dark:border-emerald-800/60',
+      badge: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/60 dark:text-emerald-300',
       items: [
         { to: '/buyers', label: 'Buyer Portfolios', icon: Users },
         { to: '/suppliers', label: 'Vendor Directory', icon: Truck },
@@ -73,6 +85,10 @@ const getNavSections = (role) => {
     sections.push({
       title: 'Merchandising & T&A',
       dot: 'bg-sky-500',
+      text: 'text-sky-700 dark:text-sky-300',
+      bg: 'bg-sky-50/90 dark:bg-sky-950/40',
+      border: 'border-sky-200/90 dark:border-sky-800/60',
+      badge: 'bg-sky-100 text-sky-700 dark:bg-sky-900/60 dark:text-sky-300',
       items: [
         { to: '/orders', label: 'Matrix Orders & Costing (BDT)', icon: ShoppingCart },
         { to: '/tna', label: 'Critical Path T&A', icon: CalendarClock },
@@ -87,6 +103,10 @@ const getNavSections = (role) => {
     sections.push({
       title: 'Supply Chain & Storage',
       dot: 'bg-cyan-500',
+      text: 'text-cyan-700 dark:text-cyan-300',
+      bg: 'bg-cyan-50/90 dark:bg-cyan-950/40',
+      border: 'border-cyan-200/90 dark:border-cyan-800/60',
+      badge: 'bg-cyan-100 text-cyan-700 dark:bg-cyan-900/60 dark:text-cyan-300',
       items: [
         { to: '/requisitions', label: 'Purchase Requisitions', icon: Receipt },
         { to: '/purchase-orders', label: 'Purchase Orders (PO)', icon: ShoppingCart },
@@ -101,6 +121,10 @@ const getNavSections = (role) => {
     sections.push({
       title: 'Shop Floor & Tracking',
       dot: 'bg-indigo-500',
+      text: 'text-indigo-700 dark:text-indigo-300',
+      bg: 'bg-indigo-50/90 dark:bg-indigo-950/40',
+      border: 'border-indigo-200/90 dark:border-indigo-800/60',
+      badge: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/60 dark:text-indigo-300',
       items: [
         { to: '/bundle-tracking', label: 'Bundle Tracking & SFC', icon: QrCode },
         { to: '/production-plans', label: 'Production Scheduling', icon: CalendarClock },
@@ -117,6 +141,10 @@ const getNavSections = (role) => {
     sections.push({
       title: 'Quality & Logistics',
       dot: 'bg-amber-500',
+      text: 'text-amber-700 dark:text-amber-300',
+      bg: 'bg-amber-50/90 dark:bg-amber-950/40',
+      border: 'border-amber-200/90 dark:border-amber-800/60',
+      badge: 'bg-amber-100 text-amber-700 dark:bg-amber-900/60 dark:text-amber-300',
       items: [
         { to: '/quality', label: 'AQL 2.5 Quality Audits', icon: ShieldCheck },
         { to: '/packing', label: 'Ratio Packing & CBM', icon: PackageCheck },
@@ -130,6 +158,10 @@ const getNavSections = (role) => {
     sections.push({
       title: 'Compensation & Labor (BDT)',
       dot: 'bg-teal-500',
+      text: 'text-teal-700 dark:text-teal-300',
+      bg: 'bg-teal-50/90 dark:bg-teal-950/40',
+      border: 'border-teal-200/90 dark:border-teal-800/60',
+      badge: 'bg-teal-100 text-teal-700 dark:bg-teal-900/60 dark:text-teal-300',
       items: [
         { to: '/payroll', label: 'Workforce & Piece-Rate (৳)', icon: Banknote },
       ],
@@ -140,6 +172,10 @@ const getNavSections = (role) => {
   sections.push({
     title: 'Financial & BI',
     dot: 'bg-rose-500',
+    text: 'text-rose-700 dark:text-rose-300',
+    bg: 'bg-rose-50/90 dark:bg-rose-950/40',
+    border: 'border-rose-200/90 dark:border-rose-800/60',
+    badge: 'bg-rose-100 text-rose-700 dark:bg-rose-900/60 dark:text-rose-300',
     items: [{ to: '/reports', label: 'EXIM & Job Costing (BDT)', icon: BarChart3 }],
   })
 
@@ -202,63 +238,75 @@ function Layout() {
       </div>
 
       {/* Navigation Sections */}
-      <nav className="flex-1 overflow-y-auto px-2.5 py-3 space-y-4">
+      <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-4">
         {navSections.map((section) => (
-          <div key={section.title} className="space-y-1">
-            <div className="flex items-center gap-1.5 px-3 py-1">
-              <span className={`w-1.5 h-1.5 rounded-full ${section.dot || 'bg-slate-400'} shrink-0`} />
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                {section.title}
+          <div key={section.title} className="space-y-1.5">
+            {/* Colorful & Bold Main Menu Header Banner */}
+            <div
+              className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg border shadow-xs transition-all ${section.bg} ${section.border}`}
+            >
+              <div className="flex items-center gap-2 min-w-0">
+                <span className={`w-2 h-2 rounded-full ${section.dot} shadow-xs shrink-0 ring-2 ring-white/80 dark:ring-slate-900/80`} />
+                <span className={`text-[11px] font-black uppercase tracking-wider ${section.text} truncate`}>
+                  {section.title}
+                </span>
+              </div>
+              <span className={`text-[10px] font-extrabold px-1.5 py-0.2 rounded-md ${section.badge} border ${section.border}`}>
+                {section.items.length}
               </span>
             </div>
-            {section.items.map((item) => {
-              const Icon = item.icon
-              const isCurrent = location.pathname === item.to
-              return (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  onClick={closeSidebar}
-                  className={({ isActive }) =>
-                    `group flex items-center px-3 py-2 rounded-lg text-xs font-medium transition-all ${
-                      isActive
-                        ? 'bg-gradient-to-r from-blue-500/15 via-indigo-500/10 to-transparent text-blue-700 dark:text-blue-300 font-bold border-l-4 border-blue-600 dark:border-blue-400 shadow-sm'
-                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-white/60 dark:hover:bg-slate-800/60'
-                    }`
-                  }
-                >
-                  <Icon
-                    size={16}
-                    className={`mr-2.5 shrink-0 transition-colors ${
-                      isCurrent
-                        ? 'text-blue-600 dark:text-blue-400'
-                        : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300'
-                    }`}
-                  />
-                  <span className="truncate">{item.label}</span>
-                  {item.to === '/bundle-tracking' && (
-                    <span className="ml-auto text-[9px] bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 px-1.5 py-0.5 rounded font-bold">
-                      SFC
-                    </span>
-                  )}
-                  {item.to === '/payroll' && (
-                    <span className="ml-auto text-[9px] bg-teal-100 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300 border border-teal-300 dark:border-teal-800 px-1.5 py-0.5 rounded font-bold">
-                      ৳ BDT
-                    </span>
-                  )}
-                  {item.to === '/orders' && (
-                    <span className="ml-auto text-[9px] bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-300 dark:border-blue-800 px-1.5 py-0.5 rounded font-bold">
-                      FOB
-                    </span>
-                  )}
-                  {item.to === '/quality' && (
-                    <span className="ml-auto text-[9px] bg-amber-100 text-amber-900 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300 dark:border-amber-800 px-1.5 py-0.5 rounded font-bold">
-                      AQL
-                    </span>
-                  )}
-                </NavLink>
-              )
-            })}
+
+            {/* Sub-menu items indented with tree line */}
+            <div className="space-y-0.5 pl-2 border-l border-slate-200/70 dark:border-slate-800/70 ml-2.5">
+              {section.items.map((item) => {
+                const Icon = item.icon
+                const isCurrent = location.pathname === item.to
+                return (
+                  <NavLink
+                    key={item.to}
+                    to={item.to}
+                    onClick={closeSidebar}
+                    className={({ isActive }) =>
+                      `group flex items-center px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                        isActive
+                          ? 'bg-blue-600/10 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 font-bold border-l-2 border-blue-600 dark:border-blue-400 shadow-xs'
+                          : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100/70 dark:hover:bg-slate-800/60'
+                      }`
+                    }
+                  >
+                    <Icon
+                      size={15}
+                      className={`mr-2.5 shrink-0 transition-colors ${
+                        isCurrent
+                          ? 'text-blue-600 dark:text-blue-400'
+                          : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-200'
+                      }`}
+                    />
+                    <span className="truncate">{item.label}</span>
+                    {item.to === '/bundle-tracking' && (
+                      <span className="ml-auto text-[9px] bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 px-1.5 py-0.5 rounded font-bold">
+                        SFC
+                      </span>
+                    )}
+                    {item.to === '/payroll' && (
+                      <span className="ml-auto text-[9px] bg-teal-100 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300 border border-teal-300 dark:border-teal-800 px-1.5 py-0.5 rounded font-bold">
+                        ৳ BDT
+                      </span>
+                    )}
+                    {item.to === '/orders' && (
+                      <span className="ml-auto text-[9px] bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-300 dark:border-blue-800 px-1.5 py-0.5 rounded font-bold">
+                        FOB
+                      </span>
+                    )}
+                    {item.to === '/quality' && (
+                      <span className="ml-auto text-[9px] bg-amber-100 text-amber-900 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300 dark:border-amber-800 px-1.5 py-0.5 rounded font-bold">
+                        AQL
+                      </span>
+                    )}
+                  </NavLink>
+                )
+              })}
+            </div>
           </div>
         ))}
       </nav>
