@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24
 
     DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/nextgen_erp"
+    MONGODB_URL: str | None = None
+    MONGODB_DB_NAME: str = "garment_erp"
 
     CORS_ORIGINS: str = '["http://localhost:3000","http://localhost:5173","https://bloom-works-garment-erp.vercel.app","https://bloomworks-garment-erp.onrender.com"]'
 

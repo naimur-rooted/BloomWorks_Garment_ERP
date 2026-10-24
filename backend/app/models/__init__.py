@@ -31,6 +31,15 @@ from app.models.packing import PackingList, PackingListItem
 from app.models.shipment import Shipment, ShipmentItem
 from app.models.tna import TNAPlan, TNAMilestone
 from app.models.material_requirement import MaterialRequirement
+from app.models.tracking import Bundle, BundleStage, BundleStatus
+from app.models.enterprise_models import (
+    FabricRoll,
+    QualityAudit,
+    PackingPlan,
+    CriticalPathMilestone,
+    CommercialLC,
+    EmployeeSalaryRecord,
+)
 
 __all__ = [
     "Role",
@@ -68,4 +77,12 @@ __all__ = [
     "TNAPlan",
     "TNAMilestone",
     "MaterialRequirement",
+    "Bundle",
+    "BundleStage",
+    "BundleStatus",
+    "FabricRoll",
+    "QualityAudit",
+    "PackingPlan",
+    "CriticalPathMilestone",
+    "CommercialLC",
 ]

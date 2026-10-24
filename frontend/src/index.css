@@ -2,14 +2,224 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  body {
+    @apply bg-slate-100/70 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased selection:bg-blue-600 selection:text-white transition-colors duration-200;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  /* Custom Clean Scrollbar for Light and Dark */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+  }
+  .dark ::-webkit-scrollbar-thumb {
+    background: #334155;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+  }
+}
+
+/* Dynamic Aurora Ambient Animations */
+@keyframes aurora-1 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(70px, 50px) scale(1.12);
+  }
+}
+@keyframes aurora-2 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-60px, -45px) scale(1.08);
+  }
+}
+@keyframes aurora-3 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-50px, 60px) scale(1.15);
+  }
+}
+@keyframes aurora-4 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(45px, -35px) scale(0.95);
+  }
+}
+
+.animate-aurora-1 {
+  animation: aurora-1 20s ease-in-out infinite;
+}
+.animate-aurora-2 {
+  animation: aurora-2 24s ease-in-out infinite;
+}
+.animate-aurora-3 {
+  animation: aurora-3 28s ease-in-out infinite;
+}
+.animate-aurora-4 {
+  animation: aurora-4 22s ease-in-out infinite;
+}
+
 @layer components {
-  .input {
-    @apply w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500;
+  /* Frosted Glass Enterprise Cards */
+  .card, .industrial-card {
+    @apply bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-white/90 dark:border-slate-800/80 rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-none transition-all;
   }
+  
+  .card-hover, .industrial-card-hover {
+    @apply bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-white/90 dark:border-slate-800/80 rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-none hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:border-slate-300 dark:hover:border-slate-700 transition-all;
+  }
+
+  /* Colorful Frosted Glass Cards */
+  .card-colorful-blue {
+    @apply bg-gradient-to-br from-blue-50/80 via-white/85 to-indigo-50/45 dark:from-slate-900/90 dark:via-slate-900/85 dark:to-blue-950/30 backdrop-blur-md border border-blue-200/80 dark:border-blue-900/50 rounded-xl shadow-[0_4px_20px_rgba(59,130,246,0.06)] dark:shadow-none hover:shadow-[0_8px_30px_rgba(59,130,246,0.1)] transition-all;
+  }
+
+  .card-colorful-emerald {
+    @apply bg-gradient-to-br from-emerald-50/80 via-white/85 to-teal-50/45 dark:from-slate-900/90 dark:via-slate-900/85 dark:to-emerald-950/30 backdrop-blur-md border border-emerald-200/80 dark:border-emerald-900/50 rounded-xl shadow-[0_4px_20px_rgba(16,185,129,0.06)] dark:shadow-none hover:shadow-[0_8px_30px_rgba(16,185,129,0.1)] transition-all;
+  }
+
+  .card-colorful-amber {
+    @apply bg-gradient-to-br from-amber-50/80 via-white/85 to-orange-50/45 dark:from-slate-900/90 dark:via-slate-900/85 dark:to-amber-950/30 backdrop-blur-md border border-amber-200/80 dark:border-amber-900/50 rounded-xl shadow-[0_4px_20px_rgba(245,158,11,0.06)] dark:shadow-none hover:shadow-[0_8px_30px_rgba(245,158,11,0.1)] transition-all;
+  }
+
+  .card-colorful-purple {
+    @apply bg-gradient-to-br from-purple-50/80 via-white/85 to-violet-50/45 dark:from-slate-900/90 dark:via-slate-900/85 dark:to-purple-950/30 backdrop-blur-md border border-purple-200/80 dark:border-purple-900/50 rounded-xl shadow-[0_4px_20px_rgba(168,85,247,0.06)] dark:shadow-none hover:shadow-[0_8px_30px_rgba(168,85,247,0.1)] transition-all;
+  }
+
+  .card-colorful-rose {
+    @apply bg-gradient-to-br from-rose-50/80 via-white/85 to-pink-50/45 dark:from-slate-900/90 dark:via-slate-900/85 dark:to-rose-950/30 backdrop-blur-md border border-rose-200/80 dark:border-rose-900/50 rounded-xl shadow-[0_4px_20px_rgba(244,63,94,0.06)] dark:shadow-none hover:shadow-[0_8px_30px_rgba(244,63,94,0.1)] transition-all;
+  }
+
+  .card-colorful-cyan {
+    @apply bg-gradient-to-br from-cyan-50/80 via-white/85 to-sky-50/45 dark:from-slate-900/90 dark:via-slate-900/85 dark:to-cyan-950/30 backdrop-blur-md border border-cyan-200/80 dark:border-cyan-900/50 rounded-xl shadow-[0_4px_20px_rgba(6,182,212,0.06)] dark:shadow-none hover:shadow-[0_8px_30px_rgba(6,182,212,0.1)] transition-all;
+  }
+
+  /* Colorful Icon Tiles */
+  .icon-box-blue {
+    @apply w-10 h-10 rounded-xl bg-blue-100 text-blue-700 dark:bg-blue-950/80 dark:text-blue-300 flex items-center justify-center ring-1 ring-blue-500/30 shadow-sm shrink-0;
+  }
+  .icon-box-emerald {
+    @apply w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 flex items-center justify-center ring-1 ring-emerald-500/30 shadow-sm shrink-0;
+  }
+  .icon-box-amber {
+    @apply w-10 h-10 rounded-xl bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 flex items-center justify-center ring-1 ring-amber-500/30 shadow-sm shrink-0;
+  }
+  .icon-box-purple {
+    @apply w-10 h-10 rounded-xl bg-purple-100 text-purple-700 dark:bg-purple-950/80 dark:text-purple-300 flex items-center justify-center ring-1 ring-purple-500/30 shadow-sm shrink-0;
+  }
+  .icon-box-rose {
+    @apply w-10 h-10 rounded-xl bg-rose-100 text-rose-700 dark:bg-rose-950/80 dark:text-rose-300 flex items-center justify-center ring-1 ring-rose-500/30 shadow-sm shrink-0;
+  }
+  .icon-box-cyan {
+    @apply w-10 h-10 rounded-xl bg-cyan-100 text-cyan-700 dark:bg-cyan-950/80 dark:text-cyan-300 flex items-center justify-center ring-1 ring-cyan-500/30 shadow-sm shrink-0;
+  }
+
+  /* Accent Borders */
+  .accent-border-blue {
+    @apply border-l-4 border-blue-600 dark:border-blue-500;
+  }
+
+  .accent-border-emerald {
+    @apply border-l-4 border-emerald-600 dark:border-emerald-500;
+  }
+
+  .accent-border-amber {
+    @apply border-l-4 border-amber-500 dark:border-amber-400;
+  }
+
+  .accent-border-rose {
+    @apply border-l-4 border-rose-500 dark:border-rose-400;
+  }
+
+  .accent-border-purple {
+    @apply border-l-4 border-purple-600 dark:border-purple-500;
+  }
+
+  /* Rich Satisfying Status Badges */
+  .badge-emerald {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300/80 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/80 shadow-sm;
+  }
+
+  .badge-amber {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-900 border border-amber-300/80 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800/80 shadow-sm;
+  }
+
+  .badge-rose {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 border border-rose-300/80 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800/80 shadow-sm;
+  }
+
+  .badge-indigo, .badge-blue {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-300/80 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800/80 shadow-sm;
+  }
+
+  .badge-purple {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 border border-purple-300/80 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800/80 shadow-sm;
+  }
+
+  .badge-cyan {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-cyan-100 text-cyan-800 border border-cyan-300/80 dark:bg-cyan-950/60 dark:text-cyan-300 dark:border-cyan-800/80 shadow-sm;
+  }
+
+  .badge-slate {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700;
+  }
+
+  /* Form Inputs */
+  .input, .input-dark {
+    @apply w-full rounded-lg bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-600 dark:focus:border-blue-500 focus:ring-1 focus:ring-blue-600 dark:focus:border-blue-500 transition-colors shadow-sm;
+  }
+
+  /* Action Buttons */
   .btn-primary {
-    @apply px-4 py-2 rounded-md bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 disabled:opacity-50;
+    @apply px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:from-blue-800 active:to-indigo-800 text-white text-sm font-semibold shadow-sm hover:shadow transition-all disabled:opacity-50 inline-flex items-center justify-center gap-1.5;
   }
+
   .btn-secondary {
-    @apply px-4 py-2 rounded-md bg-gray-100 text-gray-700 text-sm font-medium hover:bg-gray-200;
+    @apply px-4 py-2 rounded-lg bg-white/90 hover:bg-slate-50 active:bg-slate-100 text-slate-700 dark:bg-slate-800/90 dark:hover:bg-slate-700 dark:text-slate-200 border border-slate-300/80 dark:border-slate-700 text-sm font-medium shadow-sm hover:shadow transition-colors disabled:opacity-50 inline-flex items-center justify-center gap-1.5 backdrop-blur-sm;
+  }
+
+  .btn-emerald {
+    @apply px-4 py-2 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 active:from-emerald-800 active:to-teal-800 text-white text-sm font-semibold shadow-sm hover:shadow transition-all disabled:opacity-50 inline-flex items-center justify-center gap-1.5;
+  }
+
+  .btn-danger {
+    @apply px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white text-sm font-semibold shadow-sm hover:shadow transition-colors disabled:opacity-50 inline-flex items-center justify-center gap-1.5;
+  }
+}
+
+/* Print specific formatting for Payslips and Reports */
+@media print {
+  body {
+    background-color: white !important;
+    color: black !important;
+  }
+  aside, header, nav, button.no-print, .no-print, .fixed {
+    display: none !important;
+  }
+  .print-area {
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    color: #111827 !important;
   }
 }

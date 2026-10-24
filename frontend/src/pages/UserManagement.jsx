@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import api from '../services/api'
 import DataTable from '../components/ui/DataTable'
 import Modal from '../components/ui/Modal'
+import { Plus, UserCheck } from 'lucide-react'
 
 const ROLES = [
   { value: 'Admin', label: 'System Administrator' },
@@ -123,7 +124,11 @@ export default function UserManagement() {
   }
 
   const columns = [
-    { key: 'username', label: 'Username' },
+    {
+      key: 'username',
+      label: 'Username',
+      render: (row) => <span className="font-semibold text-slate-800 dark:text-slate-100">{row.username}</span>,
+    },
     { key: 'full_name', label: 'Full Name' },
     { key: 'email', label: 'Email' },
     {
@@ -131,18 +136,15 @@ export default function UserManagement() {
       label: 'ERP Role',
       render: (row) => {
         const found = ROLES.find((r) => r.value === row.role)
-        return <span className="font-medium text-gray-700">{found ? found.label : row.role}</span>
+        return <span className="font-medium text-slate-700 dark:text-slate-300">{found ? found.label : row.role}</span>
       },
     },
     {
       key: 'is_active',
       label: 'Account Status',
       render: (row) => (
-        <span
-          className={`px-2 py-1 rounded-full text-xs font-semibold ${row.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-            }`}
-        >
-          {row.is_active ? 'Active' : 'Inactive / Deactivated'}
+        <span className={row.is_active ? 'badge-emerald' : 'badge-rose'}>
+          {row.is_active ? 'Active' : 'Inactive'}
         </span>
       ),
     },
@@ -153,13 +155,13 @@ export default function UserManagement() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => openEditModal(row)}
-            className="px-2.5 py-1 text-xs rounded bg-gray-100 hover:bg-gray-200 text-gray-700"
+            className="btn-secondary text-xs py-1 px-2.5"
           >
             Edit
           </button>
           <button
             onClick={() => openResetModal(row)}
-            className="px-2.5 py-1 text-xs rounded bg-blue-50 hover:bg-blue-100 text-blue-600"
+            className="px-2.5 py-1 text-xs rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 dark:text-blue-400 border border-blue-200 dark:border-blue-800 transition"
           >
             Reset Password
           </button>
@@ -170,17 +172,18 @@ export default function UserManagement() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+      {/* Search & Filter Header Toolbar */}
+      <div className="flex flex-wrap items-center justify-between gap-4 card p-4">
         <div className="flex flex-wrap items-center gap-3">
           <input
             type="text"
-            className="input w-full sm:w-64 text-sm"
+            className="input w-full sm:w-64 text-xs"
             placeholder="Search by name, username, email..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
           <select
-            className="input text-sm"
+            className="input text-xs w-auto"
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
           >
@@ -192,7 +195,7 @@ export default function UserManagement() {
             ))}
           </select>
           <select
-            className="input text-sm"
+            className="input text-xs w-auto"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
@@ -203,9 +206,10 @@ export default function UserManagement() {
         </div>
         <button
           onClick={() => setIsCreateOpen(true)}
-          className="btn-primary text-sm flex items-center gap-2"
+          className="btn-primary text-xs"
         >
-          + Provision New Account
+          <Plus size={15} />
+          <span>Provision New Account</span>
         </button>
       </div>
 
@@ -225,38 +229,38 @@ export default function UserManagement() {
         <form onSubmit={handleCreate} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">Full Name *</label>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Full Name *</label>
               <input
                 className="input"
-                placeholder="e.g. Sarah Ahmed"
                 required
                 value={createForm.full_name}
                 onChange={(e) => setCreateForm({ ...createForm, full_name: e.target.value })}
+                placeholder="e.g. Tariqul Islam"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">Username *</label>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Username *</label>
               <input
                 className="input"
-                placeholder="e.g. sarah.ahmed"
                 required
                 value={createForm.username}
                 onChange={(e) => setCreateForm({ ...createForm, username: e.target.value })}
+                placeholder="e.g. tislam"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">Corporate Email *</label>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Email Address *</label>
               <input
-                className="input"
                 type="email"
-                placeholder="e.g. sarah@factory.com"
+                className="input"
                 required
                 value={createForm.email}
                 onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
+                placeholder="e.g. tislam@bloomworks.com"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">ERP Role *</label>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">ERP Access Role *</label>
               <select
                 className="input"
                 value={createForm.role}
@@ -269,27 +273,28 @@ export default function UserManagement() {
                 ))}
               </select>
             </div>
-            <div className="col-span-2">
-              <label className="block text-xs font-semibold text-gray-600 mb-1">Temporary Initial Password *</label>
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Initial Temporary Password *</label>
               <input
-                className="input"
                 type="password"
-                placeholder="Initial password for employee"
+                className="input"
                 required
                 value={createForm.password}
                 onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })}
+                placeholder="Min 6 characters"
               />
-              <p className="text-[11px] text-gray-500 mt-1">
-                Note: Passwords are securely hashed. The employee will be prompted to update credentials upon login.
-              </p>
             </div>
           </div>
-          <div className="flex justify-end gap-2 pt-2">
-            <button type="button" onClick={() => setIsCreateOpen(false)} className="btn-secondary">
+          <div className="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+            <button
+              type="button"
+              onClick={() => setIsCreateOpen(false)}
+              className="btn-secondary"
+            >
               Cancel
             </button>
             <button type="submit" className="btn-primary">
-              Provision Account
+              Create Account
             </button>
           </div>
         </form>
@@ -299,29 +304,31 @@ export default function UserManagement() {
       <Modal
         isOpen={isEditOpen}
         onClose={() => setIsEditOpen(false)}
-        title={`Edit Account: ${selectedUser?.username}`}
+        title={`Edit User: ${selectedUser?.username}`}
       >
         <form onSubmit={handleEdit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">Full Name</label>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
               <input
                 className="input"
+                required
                 value={editForm.full_name}
                 onChange={(e) => setEditForm({ ...editForm, full_name: e.target.value })}
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">Email</label>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Email</label>
               <input
-                className="input"
                 type="email"
+                className="input"
+                required
                 value={editForm.email}
                 onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">ERP Role</label>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">ERP Role</label>
               <select
                 className="input"
                 value={editForm.role}
@@ -335,19 +342,23 @@ export default function UserManagement() {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">Account Status</label>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Account Active Status</label>
               <select
                 className="input"
                 value={editForm.is_active ? 'true' : 'false'}
                 onChange={(e) => setEditForm({ ...editForm, is_active: e.target.value === 'true' })}
               >
-                <option value="true">Active</option>
-                <option value="false">Inactive / Deactivated</option>
+                <option value="true">Active (Access Granted)</option>
+                <option value="false">Suspended / Deactivated</option>
               </select>
             </div>
           </div>
-          <div className="flex justify-end gap-2 pt-2">
-            <button type="button" onClick={() => setIsEditOpen(false)} className="btn-secondary">
+          <div className="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+            <button
+              type="button"
+              onClick={() => setIsEditOpen(false)}
+              className="btn-secondary"
+            >
               Cancel
             </button>
             <button type="submit" className="btn-primary">
@@ -364,25 +375,30 @@ export default function UserManagement() {
         title={`Reset Password for ${selectedUser?.username}`}
       >
         <form onSubmit={handleResetPassword} className="space-y-4">
+          <p className="text-xs text-slate-600 dark:text-slate-400">
+            Enter a temporary password for <strong>{selectedUser?.full_name}</strong> ({selectedUser?.email}). The user will be required to change this upon login.
+          </p>
           <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1">
-              New Temporary Password *
-            </label>
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">New Temporary Password</label>
             <input
-              className="input"
               type="password"
-              placeholder="Enter new temporary password"
+              className="input"
               required
+              placeholder="Minimum 6 characters"
               value={resetPasswordText}
               onChange={(e) => setResetPasswordText(e.target.value)}
             />
           </div>
-          <div className="flex justify-end gap-2 pt-2">
-            <button type="button" onClick={() => setIsResetOpen(false)} className="btn-secondary">
+          <div className="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+            <button
+              type="button"
+              onClick={() => setIsResetOpen(false)}
+              className="btn-secondary"
+            >
               Cancel
             </button>
             <button type="submit" className="btn-primary">
-              Set Temporary Password
+              Confirm Reset
             </button>
           </div>
         </form>

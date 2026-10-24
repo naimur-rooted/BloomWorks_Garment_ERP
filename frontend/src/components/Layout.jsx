@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom'
 import {
   LayoutDashboard,
@@ -24,14 +24,22 @@ import {
   LogOut,
   Menu,
   X,
+  QrCode,
+  Banknote,
+  Search,
+  Clock,
+  ChevronRight,
 } from 'lucide-react'
 import { useAuth } from '../auth/AuthContext'
+import ThemeToggle from './ui/ThemeToggle'
+import DynamicBackground from './ui/DynamicBackground'
 
 const getNavSections = (role) => {
   const sections = [
     {
       title: 'Overview',
-      items: [{ to: '/', label: 'Dashboard', icon: LayoutDashboard }],
+      dot: 'bg-blue-500',
+      items: [{ to: '/', label: 'Executive Dashboard', icon: LayoutDashboard }],
     },
   ]
 
@@ -39,103 +47,100 @@ const getNavSections = (role) => {
   if (role === 'Admin') {
     sections.push({
       title: 'Administration',
-      items: [{ to: '/users', label: 'User Management', icon: UserCog }],
+      dot: 'bg-purple-500',
+      items: [{ to: '/users', label: 'User Directory', icon: UserCog }],
     })
   }
 
   // Master Data
   if (['Admin', 'Merchandiser', 'Planner', 'Purchase Manager', 'Inventory Manager', 'Management'].includes(role)) {
     sections.push({
-      title: 'Master Data',
+      title: 'Master Specifications',
+      dot: 'bg-emerald-500',
       items: [
-        { to: '/buyers', label: 'Buyers', icon: Users },
-        { to: '/suppliers', label: 'Suppliers', icon: Truck },
-        { to: '/styles', label: 'Styles', icon: Shirt },
-        { to: '/materials', label: 'Materials', icon: Boxes },
-        { to: '/colors', label: 'Colors', icon: Palette },
-        { to: '/sizes', label: 'Sizes', icon: Ruler },
+        { to: '/buyers', label: 'Buyer Portfolios', icon: Users },
+        { to: '/suppliers', label: 'Vendor Directory', icon: Truck },
+        { to: '/styles', label: 'Style Tech Packs', icon: Shirt },
+        { to: '/materials', label: 'Raw Materials', icon: Boxes },
+        { to: '/colors', label: 'Color Formulations', icon: Palette },
+        { to: '/sizes', label: 'Size Grids', icon: Ruler },
       ],
     })
   }
 
-  // Merchandising
+  // Merchandising & Sourcing
   if (['Admin', 'Merchandiser', 'Planner', 'Management'].includes(role)) {
     sections.push({
-      title: 'Merchandising',
+      title: 'Merchandising & T&A',
+      dot: 'bg-sky-500',
       items: [
-        { to: '/orders', label: 'Buyer Orders', icon: ShoppingCart },
-        { to: '/tna', label: 'TNA', icon: CalendarClock },
+        { to: '/orders', label: 'Matrix Orders & Costing (BDT)', icon: ShoppingCart },
+        { to: '/tna', label: 'Critical Path T&A', icon: CalendarClock },
+        { to: '/boms', label: 'Bill of Materials (BOM)', icon: Package },
+        { to: '/material-requirements', label: 'Material Forecast (MRP)', icon: ClipboardCheck },
       ],
     })
   }
 
-  // BOM
-  if (['Admin', 'Merchandiser', 'Planner', 'Management'].includes(role)) {
-    sections.push({
-      title: 'BOM & MRP',
-      items: [
-        { to: '/boms', label: 'BOM', icon: Package },
-        { to: '/material-requirements', label: 'Material Requirements', icon: ClipboardCheck },
-      ],
-    })
-  }
-
-  // Procurement
+  // Procurement & Warehousing
   if (['Admin', 'Purchase Manager', 'Inventory Manager', 'Warehouse Manager', 'Management'].includes(role)) {
     sections.push({
-      title: 'Procurement',
+      title: 'Supply Chain & Storage',
+      dot: 'bg-cyan-500',
       items: [
         { to: '/requisitions', label: 'Purchase Requisitions', icon: Receipt },
-        { to: '/purchase-orders', label: 'Purchase Orders', icon: ShoppingCart },
-        { to: '/goods-receipts', label: 'Goods Receipts', icon: Package },
+        { to: '/purchase-orders', label: 'Purchase Orders (PO)', icon: ShoppingCart },
+        { to: '/goods-receipts', label: 'Goods Receipts (GRN)', icon: Package },
+        { to: '/inventory', label: 'Fabric Rolls & 4-Point', icon: Boxes },
       ],
     })
   }
 
-  // Inventory
-  if (['Admin', 'Inventory Manager', 'Warehouse Manager', 'Production Manager', 'Planner', 'Management'].includes(role)) {
-    sections.push({
-      title: 'Inventory',
-      items: [{ to: '/inventory', label: 'Inventory', icon: Boxes }],
-    })
-  }
-
-  // Production
+  // Production & Floor Control
   if (['Admin', 'Production Manager', 'Planner', 'Management'].includes(role)) {
     sections.push({
-      title: 'Production',
+      title: 'Shop Floor & Tracking',
+      dot: 'bg-indigo-500',
       items: [
-        { to: '/production-plans', label: 'Production Plans', icon: CalendarClock },
-        { to: '/cutting', label: 'Cutting', icon: Scissors },
-        { to: '/sewing', label: 'Sewing', icon: Layers },
-        { to: '/finishing', label: 'Finishing', icon: Sparkles },
+        { to: '/bundle-tracking', label: 'Bundle Tracking & SFC', icon: QrCode },
+        { to: '/production-plans', label: 'Production Scheduling', icon: CalendarClock },
+        { to: '/work-orders', label: 'Work Orders', icon: ClipboardCheck },
+        { to: '/cutting', label: 'Cutting Floor', icon: Scissors },
+        { to: '/sewing', label: 'Sewing Operations', icon: Layers },
+        { to: '/finishing', label: 'Garment Finishing', icon: Sparkles },
       ],
     })
   }
 
-  // Quality
-  if (['Admin', 'Quality Inspector', 'Production Manager', 'Management'].includes(role)) {
+  // Quality & Dispatch
+  if (['Admin', 'Quality Inspector', 'Production Manager', 'Warehouse Manager', 'Management'].includes(role)) {
     sections.push({
-      title: 'Quality',
-      items: [{ to: '/quality', label: 'Quality Control', icon: ShieldCheck }],
-    })
-  }
-
-  // Packing & Shipment
-  if (['Admin', 'Warehouse Manager', 'Inventory Manager', 'Management'].includes(role)) {
-    sections.push({
-      title: 'Packing & Shipment',
+      title: 'Quality & Logistics',
+      dot: 'bg-amber-500',
       items: [
-        { to: '/packing', label: 'Packing', icon: PackageCheck },
-        { to: '/shipments', label: 'Shipments', icon: Ship },
+        { to: '/quality', label: 'AQL 2.5 Quality Audits', icon: ShieldCheck },
+        { to: '/packing', label: 'Ratio Packing & CBM', icon: PackageCheck },
+        { to: '/shipments', label: 'Commercial Cargo', icon: Ship },
       ],
     })
   }
 
-  // Analytics
+  // Workforce & Compensation (Payroll in BDT)
+  if (['Admin', 'Production Manager', 'Management', 'Merchandiser', 'Planner'].includes(role)) {
+    sections.push({
+      title: 'Compensation & Labor (BDT)',
+      dot: 'bg-teal-500',
+      items: [
+        { to: '/payroll', label: 'Workforce & Piece-Rate (৳)', icon: Banknote },
+      ],
+    })
+  }
+
+  // Analytics & Commercial
   sections.push({
-    title: 'Analytics',
-    items: [{ to: '/reports', label: 'Reports', icon: BarChart3 }],
+    title: 'Financial & BI',
+    dot: 'bg-rose-500',
+    items: [{ to: '/reports', label: 'EXIM & Job Costing (BDT)', icon: BarChart3 }],
   })
 
   return sections
@@ -146,6 +151,13 @@ function Layout() {
   const location = useLocation()
   const { user, logout } = useAuth()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [currentTime, setCurrentTime] = useState(new Date())
+  const [searchPo, setSearchPo] = useState('')
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000)
+    return () => clearInterval(timer)
+  }, [])
 
   const handleLogout = () => {
     logout()
@@ -154,108 +166,226 @@ function Layout() {
 
   const closeSidebar = () => setSidebarOpen(false)
 
-  const navSections = getNavSections(user?.role)
+  const navSections = getNavSections(user?.role || 'Admin')
+
+  const activeItem = navSections
+    .flatMap((s) => s.items)
+    .find((i) => i.to === location.pathname)
 
   const sidebarContent = (
-    <>
-      <div className="p-4 border-b border-gray-800 flex items-center justify-between">
-        <div>
-          <h1 className="text-lg font-bold text-white">BloomWorks ERP</h1>
-          <p className="text-xs text-gray-500">Garment Manufacturing</p>
+    <div className="flex flex-col h-full bg-white/75 dark:bg-slate-900/80 backdrop-blur-xl border-r border-slate-200/70 dark:border-slate-800/80 select-none transition-colors">
+      {/* Brand Header */}
+      <div className="p-4 border-b border-slate-200/70 dark:border-slate-800/80 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-emerald-400 flex items-center justify-center text-white font-black text-sm shadow-md shadow-blue-500/25 ring-2 ring-white/30 shrink-0">
+            BW
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
+                BloomWorks
+              </h1>
+              <span className="text-[10px] bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-slate-700 font-bold px-1.5 py-0.5 rounded shadow-sm">
+                ERP Pro
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Garment Industrial Suite</p>
+          </div>
         </div>
         <button
           onClick={closeSidebar}
-          className="lg:hidden p-2 rounded hover:bg-gray-800 text-gray-400 hover:text-white"
+          className="lg:hidden p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 transition"
           aria-label="Close menu"
         >
-          <X size={20} />
+          <X size={18} />
         </button>
       </div>
-      <nav className="flex-1 overflow-y-auto py-2">
+
+      {/* Navigation Sections */}
+      <nav className="flex-1 overflow-y-auto px-2.5 py-3 space-y-4">
         {navSections.map((section) => (
-          <div key={section.title} className="mb-3">
-            <div className="px-4 py-1 text-[11px] font-semibold uppercase tracking-wider text-gray-500">
-              {section.title}
+          <div key={section.title} className="space-y-1">
+            <div className="flex items-center gap-1.5 px-3 py-1">
+              <span className={`w-1.5 h-1.5 rounded-full ${section.dot || 'bg-slate-400'} shrink-0`} />
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                {section.title}
+              </span>
             </div>
             {section.items.map((item) => {
               const Icon = item.icon
+              const isCurrent = location.pathname === item.to
               return (
                 <NavLink
                   key={item.to}
                   to={item.to}
                   onClick={closeSidebar}
                   className={({ isActive }) =>
-                    `flex items-center px-4 py-2 mx-2 rounded text-sm transition-colors ${
+                    `group flex items-center px-3 py-2 rounded-lg text-xs font-medium transition-all ${
                       isActive
-                        ? 'bg-blue-600 text-white'
-                        : 'hover:bg-gray-800 hover:text-white'
+                        ? 'bg-gradient-to-r from-blue-500/15 via-indigo-500/10 to-transparent text-blue-700 dark:text-blue-300 font-bold border-l-4 border-blue-600 dark:border-blue-400 shadow-sm'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-white/60 dark:hover:bg-slate-800/60'
                     }`
                   }
                 >
-                  <Icon size={16} className="mr-3 shrink-0" />
+                  <Icon
+                    size={16}
+                    className={`mr-2.5 shrink-0 transition-colors ${
+                      isCurrent
+                        ? 'text-blue-600 dark:text-blue-400'
+                        : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300'
+                    }`}
+                  />
                   <span className="truncate">{item.label}</span>
+                  {item.to === '/bundle-tracking' && (
+                    <span className="ml-auto text-[9px] bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 px-1.5 py-0.5 rounded font-bold">
+                      SFC
+                    </span>
+                  )}
+                  {item.to === '/payroll' && (
+                    <span className="ml-auto text-[9px] bg-teal-100 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300 border border-teal-300 dark:border-teal-800 px-1.5 py-0.5 rounded font-bold">
+                      ৳ BDT
+                    </span>
+                  )}
+                  {item.to === '/orders' && (
+                    <span className="ml-auto text-[9px] bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-300 dark:border-blue-800 px-1.5 py-0.5 rounded font-bold">
+                      FOB
+                    </span>
+                  )}
+                  {item.to === '/quality' && (
+                    <span className="ml-auto text-[9px] bg-amber-100 text-amber-900 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300 dark:border-amber-800 px-1.5 py-0.5 rounded font-bold">
+                      AQL
+                    </span>
+                  )}
                 </NavLink>
               )
             })}
           </div>
         ))}
       </nav>
-      <div className="p-4 border-t border-gray-800">
-        <div className="flex items-center justify-between gap-2">
-          <div className="min-w-0">
-            <p className="text-sm text-white truncate">{user?.full_name}</p>
-            <p className="text-xs text-gray-500 truncate">
-              {user?.role === 'Admin' ? 'System Administrator' : user?.role}
-            </p>
+
+      {/* User & Terminal Profile Footer */}
+      <div className="p-3 border-t border-slate-200/70 dark:border-slate-800/80 bg-white/50 dark:bg-slate-900/90 transition-colors">
+        <div className="flex items-center justify-between gap-2 p-2 rounded-lg bg-white/80 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 shadow-sm backdrop-blur-sm">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-sm">
+              {user?.full_name?.charAt(0) || 'U'}
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate leading-tight">
+                {user?.full_name || 'Floor Operator'}
+              </p>
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 truncate flex items-center gap-1 font-medium">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                {user?.role === 'Admin' ? 'Sys Admin' : user?.role || 'Operator'}
+              </span>
+            </div>
           </div>
           <button
             onClick={handleLogout}
-            className="p-2 rounded hover:bg-gray-800 text-gray-400 hover:text-white shrink-0"
-            aria-label="Log out"
+            className="p-1.5 rounded-md hover:bg-rose-50 dark:hover:bg-rose-950/40 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 transition shrink-0"
+            title="Sign out"
           >
-            <LogOut size={18} />
+            <LogOut size={16} />
           </button>
         </div>
       </div>
-    </>
+    </div>
   )
 
   return (
-    <div className="flex h-screen bg-gray-100 overflow-hidden">
-      {/* Mobile overlay */}
+    <div className="relative flex h-screen overflow-hidden font-sans text-slate-800 dark:text-slate-100 transition-colors duration-200">
+      {/* Living Aurora & Fabric Texture Dynamic Background */}
+      <DynamicBackground />
+
+      {/* Mobile drawer backdrop */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-30 bg-black bg-opacity-50 lg:hidden"
+          className="fixed inset-0 z-40 bg-black/40 dark:bg-black/70 backdrop-blur-sm lg:hidden transition-opacity"
           onClick={closeSidebar}
         />
       )}
-      {/* Sidebar: static on desktop, slide-over drawer on mobile */}
+
+      {/* Modern Frosted Sidebar */}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-40 w-64 max-w-[85vw] bg-gray-900 text-gray-300 flex flex-col transform transition-transform duration-200 ease-in-out ${
+        className={`fixed lg:static inset-y-0 left-0 z-50 w-64 max-w-[85vw] flex flex-col transform transition-transform duration-200 ease-in-out ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
         {sidebarContent}
       </aside>
-      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-        <header className="min-h-14 bg-white border-b flex items-center gap-3 px-4 sm:px-6 py-2">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="lg:hidden p-2 -ml-2 rounded hover:bg-gray-100 text-gray-600"
-            aria-label="Open menu"
-          >
-            <Menu size={20} />
-          </button>
-          <h1 className="text-base sm:text-lg font-semibold text-gray-800 truncate">
-            {navSections
-              .flatMap((s) => s.items)
-              .find((i) => i.to === location.pathname)?.label || 'Dashboard'}
-          </h1>
-        </header>
-        <main className="flex-1 overflow-y-auto bg-gray-50">
-          <div className="p-4 sm:p-6">
-            <Outlet />
+
+      {/* Main Viewport Container */}
+      <div className="relative z-10 flex-1 flex flex-col overflow-hidden min-w-0">
+        {/* Subtle Top Accent Ribbon */}
+        <div className="h-0.5 bg-gradient-to-r from-blue-600 via-indigo-500 to-emerald-400 shrink-0" />
+
+        {/* Top Control Header */}
+        <header className="h-14 bg-white/75 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/70 dark:border-slate-800/80 flex items-center justify-between px-4 sm:px-6 shrink-0 z-20 transition-colors shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+          <div className="flex items-center gap-3 min-w-0">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden p-1.5 rounded-lg bg-white/80 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 border border-slate-200/80 dark:border-slate-700"
+              aria-label="Open navigation menu"
+            >
+              <Menu size={18} />
+            </button>
+            <div className="flex items-center gap-2 text-xs">
+              <span className="text-slate-400 dark:text-slate-500 hidden sm:inline font-medium">BloomWorks ERP</span>
+              <ChevronRight size={13} className="text-slate-400 hidden sm:inline" />
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white truncate">
+                {activeItem?.label || 'Dashboard'}
+              </h2>
+            </div>
           </div>
+
+          {/* Right Controls & Indicators */}
+          <div className="flex items-center gap-2.5 sm:gap-3 text-xs">
+            {/* Live Factory Node Indicator */}
+            <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50/90 dark:bg-slate-800/90 border border-emerald-200/80 dark:border-slate-700 text-[11px] shadow-sm backdrop-blur-sm">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+              </span>
+              <span className="text-emerald-950 dark:text-emerald-300 font-bold">DHAKA-01 LIVE</span>
+              <span className="text-emerald-300 dark:text-slate-600">|</span>
+              <span className="text-blue-700 dark:text-blue-400 font-semibold">SHIFT A</span>
+            </div>
+
+            {/* Currency Pill */}
+            <div className="hidden lg:flex items-center gap-1 px-2 py-0.5 rounded-md bg-teal-50 dark:bg-teal-950/50 border border-teal-200 dark:border-teal-800 text-[11px] font-bold text-teal-800 dark:text-teal-300">
+              <span>CURRENCY:</span>
+              <span className="font-mono text-teal-900 dark:text-teal-200 font-extrabold">৳ BDT</span>
+            </div>
+
+            {/* Synchronized Clock */}
+            <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/80 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700 text-[11px] text-slate-700 dark:text-slate-300 font-medium backdrop-blur-sm shadow-sm">
+              <Clock size={13} className="text-blue-600 dark:text-blue-400" />
+              <span className="font-mono">
+                {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+              </span>
+              <span className="text-slate-400 text-[10px]">BST</span>
+            </div>
+
+            {/* Quick Order Finder */}
+            <div className="relative hidden xl:block w-40">
+              <Search size={13} className="absolute left-2.5 top-2.5 text-slate-400" />
+              <input
+                type="text"
+                value={searchPo}
+                onChange={(e) => setSearchPo(e.target.value)}
+                placeholder="PO lookup..."
+                className="w-full bg-white/80 dark:bg-slate-950/80 backdrop-blur-sm border border-slate-300/80 dark:border-slate-700 rounded-lg pl-7 pr-2 py-1 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-blue-600 dark:focus:border-blue-500 shadow-sm"
+              />
+            </div>
+
+            {/* Theme Toggle Switch */}
+            <ThemeToggle />
+          </div>
+        </header>
+
+        {/* Page Content Viewport with Glassmorphism Over Canvas */}
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 transition-colors duration-150 relative z-10">
+          <Outlet />
         </main>
       </div>
     </div>

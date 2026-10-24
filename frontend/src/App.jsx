@@ -27,6 +27,8 @@ import Shipments from './pages/Shipments'
 import TNA from './pages/TNA'
 import Reports from './pages/Reports'
 import UserManagement from './pages/UserManagement'
+import BundleTracking from './pages/BundleTracking'
+import Payroll from './pages/Payroll'
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth()
@@ -89,10 +91,12 @@ function App() {
         <Route path="cutting" element={<Cutting />} />
         <Route path="sewing" element={<Sewing />} />
         <Route path="finishing" element={<Finishing />} />
+        <Route path="bundle-tracking" element={<BundleTracking />} />
         <Route path="quality" element={<Quality />} />
         <Route path="packing" element={<Packing />} />
         <Route path="shipments" element={<Shipments />} />
         <Route path="tna" element={<TNA />} />
+        <Route path="payroll" element={<Payroll />} />
         <Route path="reports" element={<Reports />} />
       </Route>
     </Routes>
