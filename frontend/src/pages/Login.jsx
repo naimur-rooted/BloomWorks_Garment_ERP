@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
-import { Lock, User, AlertCircle, ArrowRight } from 'lucide-react'
+import { Lock, User, AlertCircle, ArrowRight, Sparkles, KeyRound } from 'lucide-react'
 import ThemeToggle from '../components/ui/ThemeToggle'
 
 export default function Login() {
@@ -18,6 +18,25 @@ export default function Login() {
     setError('')
     try {
       await login(username, password)
+      navigate('/')
+    } catch (err) {
+      if (err.code === 'ECONNABORTED' || err.message?.includes('timeout') || err.message?.includes('Network Error')) {
+        setError('Backend server took too long to respond. The free cloud host may be starting up or offline. Please retry in a few moments.')
+      } else {
+        setError(err.response?.data?.detail || 'Invalid username or password')
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleDemoLogin = async (demoUser = 'admin', demoPass = 'admin123') => {
+    setUsername(demoUser)
+    setPassword(demoPass)
+    setLoading(true)
+    setError('')
+    try {
+      await login(demoUser, demoPass)
       navigate('/')
     } catch (err) {
       if (err.code === 'ECONNABORTED' || err.message?.includes('timeout') || err.message?.includes('Network Error')) {
@@ -104,7 +123,36 @@ export default function Login() {
             </button>
           </form>
 
-          <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-500 font-mono">
+          {/* Quick Demo Access Section */}
+          <div className="mt-5 pt-5 border-t border-slate-200 dark:border-slate-800">
+            <div className="flex items-center justify-between mb-2.5">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                <KeyRound size={13} className="text-blue-500" />
+                Demo Inspection Access
+              </span>
+              <span className="text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded">
+                Auto-Provisioned
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => handleDemoLogin('admin', 'admin123')}
+              disabled={loading}
+              className="w-full py-2.5 px-4 rounded-xl border border-blue-500/30 bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-emerald-500/10 hover:from-blue-500/20 hover:via-indigo-500/20 hover:to-emerald-500/20 text-blue-700 dark:text-blue-300 font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all duration-150 active:scale-[0.99] group cursor-pointer"
+            >
+              <Sparkles size={14} className="text-blue-600 dark:text-blue-400 group-hover:rotate-12 transition-transform" />
+              <span>{loading ? 'Logging in as Demo...' : 'Instant Demo Login (System Admin)'}</span>
+            </button>
+
+            <div className="mt-2 text-center">
+              <span className="text-[11px] text-slate-400 dark:text-slate-500">
+                Credentials: <code className="text-slate-700 dark:text-slate-300 font-mono font-semibold">admin</code> / <code className="text-slate-700 dark:text-slate-300 font-mono font-semibold">admin123</code>
+              </span>
+            </div>
+          </div>
+
+          <div className="mt-6 pt-4 border-t border-slate-200/60 dark:border-slate-800/60 flex items-center justify-between text-[11px] text-slate-500 font-mono">
             <span>Terminal: DHAKA-01</span>
             <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
