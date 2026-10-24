@@ -90,10 +90,13 @@ app.include_router(enterprise_router, prefix=API_PREFIX)
 
 
 @app.get("/")
+@app.get("/api")
+@app.get("/api/")
 def root():
     return {
         "app": settings.APP_NAME,
         "version": settings.APP_VERSION,
+        "status": "online",
         "docs": "/docs",
     }
 

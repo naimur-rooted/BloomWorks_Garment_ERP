@@ -4,11 +4,23 @@
   "outputDirectory": "frontend/dist",
   "rewrites": [
     {
-      "source": "/api/:path*",
+      "source": "/api/(.*)",
       "destination": "/api/index.py"
     },
     {
-      "source": "/((?!assets/).*)",
+      "source": "/api",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/docs",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/openapi.json",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
   ]
