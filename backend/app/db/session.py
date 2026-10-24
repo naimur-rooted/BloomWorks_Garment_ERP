@@ -1,3 +1,4 @@
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from app.core.config import settings
@@ -5,6 +6,10 @@ from app.core.config import settings
 db_url = settings.sync_database_url if hasattr(settings, "sync_database_url") else settings.DATABASE_URL
 if db_url.startswith("postgres://"):
     db_url = db_url.replace("postgres://", "postgresql://", 1)
+
+# In serverless environments (e.g. Vercel), if SQLite is used, ensure it targets writable /tmp
+if db_url.startswith("sqlite") and os.environ.get("VERCEL"):
+    db_url = "sqlite:////tmp/garment_erp.db"
 
 connect_args = {"check_same_thread": False} if db_url.startswith("sqlite") else {}
 
