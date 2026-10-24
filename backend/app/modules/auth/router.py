@@ -22,30 +22,43 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 @router.post("/login", response_model=Token)
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.username == form_data.username).first()
-    # Self-healing: auto-provision default admin if missing in fresh database
-    if not user and form_data.username == "admin" and form_data.password == "admin123":
-        user = User(
-            username="admin",
-            email="admin@nextgen.com",
-            full_name="System Administrator",
-            hashed_password=get_password_hash("admin123"),
-            role=Role.ADMIN,
-            is_active=True,
-        )
-        db.add(user)
-        db.commit()
-        db.refresh(user)
-    if not user or not verify_password(form_data.password, user.hashed_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-        )
-    if not user.is_active:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User account is deactivated. Contact System Administrator.")
+    try:
+        user = db.query(User).filter(User.username == form_data.username).first()
+        # Self-healing: auto-provision default admin if missing in fresh database
+        if not user and form_data.username == "admin" and form_data.password == "admin123":
+            user = User(
+                username="admin",
+                email="admin@nextgen.com",
+                full_name="System Administrator",
+                hashed_password=get_password_hash("admin123"),
+                role=Role.ADMIN,
+                is_active=True,
+                must_change_password=False,
+            )
+            db.add(user)
+            db.commit()
+            db.refresh(user)
 
-    token = create_access_token(user.id)
-    return Token(access_token=token)
+        if not user or not verify_password(form_data.password, user.hashed_password):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect username or password",
+            )
+        if not user.is_active:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User account is deactivated. Contact System Administrator.")
+
+        token = create_access_token(user.id)
+        return Token(access_token=token)
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        err_msg = traceback.format_exc()
+        print(f"[Auth Error] Login failure: {err_msg}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Login authentication error: {str(e)}",
+        )
 
 
 @router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)

@@ -8,6 +8,13 @@ if backend_dir not in sys.path:
     sys.path.insert(0, backend_dir)
 
 from app.main import app
+from app.db.session import engine, _ensure_tables_and_seed
+
+# Initialize tables and seed default admin on serverless start
+try:
+    _ensure_tables_and_seed(engine)
+except Exception as e:
+    print(f"[Vercel Init Notice] Pre-seed error: {e}")
 
 # ASGI middleware to ensure both /api/... and /... paths match backend routers
 class VercelPathNormalizer:
