@@ -1,48 +1,69 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import { Lock, User, AlertCircle, ArrowRight, Sparkles, KeyRound } from 'lucide-react'
 import ThemeToggle from '../components/ui/ThemeToggle'
 
 export default function Login() {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+  const [username, setUsername] = useState('admin')
+  const [password, setPassword] = useState('admin123')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const { login } = useAuth()
+  const { user, login } = useAuth()
   const navigate = useNavigate()
 
+  useEffect(() => {
+    // If user is already authenticated, redirect to dashboard immediately
+    const token = localStorage.getItem('token')
+    const savedUser = localStorage.getItem('user')
+    if (user || (token && savedUser)) {
+      window.location.replace('/')
+    }
+  }, [user])
+
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    if (e) e.preventDefault()
+    if (loading) return
     setLoading(true)
     setError('')
     try {
       await login(username, password)
-      navigate('/')
+      window.location.replace('/')
     } catch (err) {
-      if (err.code === 'ECONNABORTED' || err.message?.includes('timeout') || err.message?.includes('Network Error')) {
-        setError('Backend server took too long to respond. The free cloud host may be starting up or offline. Please retry in a few moments.')
+      console.error('Login error:', err)
+      const detail = err.response?.data?.detail
+      if (detail) {
+        setError(detail)
+      } else if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
+        setError('Server took too long to respond. The cloud service may be cold-starting. Please click to retry.')
+      } else if (err.message?.includes('Network Error')) {
+        setError('Network error connecting to backend. Please check your connection and retry.')
       } else {
-        setError(err.response?.data?.detail || 'Invalid username or password')
+        setError('Authentication failed. Please verify credentials or retry.')
       }
     } finally {
       setLoading(false)
     }
   }
 
-  const handleDemoLogin = async (demoUser = 'admin', demoPass = 'admin123') => {
-    setUsername(demoUser)
-    setPassword(demoPass)
+  const handleDemoLogin = async () => {
+    if (loading) return
+    setUsername('admin')
+    setPassword('admin123')
     setLoading(true)
     setError('')
     try {
-      await login(demoUser, demoPass)
-      navigate('/')
+      await login('admin', 'admin123')
+      window.location.replace('/')
     } catch (err) {
-      if (err.code === 'ECONNABORTED' || err.message?.includes('timeout') || err.message?.includes('Network Error')) {
-        setError('Backend server took too long to respond. The free cloud host may be starting up or offline. Please retry in a few moments.')
+      console.error('Demo login error:', err)
+      const detail = err.response?.data?.detail
+      if (detail) {
+        setError(detail)
+      } else if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
+        setError('Server cold start took too long. Please click again to retry.')
       } else {
-        setError(err.response?.data?.detail || 'Invalid username or password')
+        setError('Demo authentication failed. Please retry in a few moments.')
       }
     } finally {
       setLoading(false)
@@ -116,7 +137,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full btn-primary py-2.5 flex items-center justify-center gap-2 text-xs font-semibold"
+              className="w-full btn-primary py-2.5 flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer"
             >
               <span>{loading ? 'Authenticating...' : 'Sign In'}</span>
               <ArrowRight size={14} />
@@ -137,12 +158,12 @@ export default function Login() {
 
             <button
               type="button"
-              onClick={() => handleDemoLogin('admin', 'admin123')}
+              onClick={handleDemoLogin}
               disabled={loading}
               className="w-full py-2.5 px-4 rounded-xl border border-blue-500/30 bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-emerald-500/10 hover:from-blue-500/20 hover:via-indigo-500/20 hover:to-emerald-500/20 text-blue-700 dark:text-blue-300 font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all duration-150 active:scale-[0.99] group cursor-pointer"
             >
               <Sparkles size={14} className="text-blue-600 dark:text-blue-400 group-hover:rotate-12 transition-transform" />
-              <span>{loading ? 'Logging in as Demo...' : 'Instant Demo Login (System Admin)'}</span>
+              <span>{loading ? 'Authenticating as Demo Admin...' : 'Instant Demo Login (System Admin)'}</span>
             </button>
 
             <div className="mt-2 text-center">

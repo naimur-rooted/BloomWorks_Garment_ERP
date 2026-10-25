@@ -19,8 +19,13 @@ export function AuthProvider({ children }) {
     const res = await api.post('/auth/login', params, {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     })
-    localStorage.setItem('token', res.data.access_token)
-    const meRes = await api.get('/auth/me')
+    const token = res.data.access_token
+    localStorage.setItem('token', token)
+    
+    // Explicitly pass Authorization header to avoid any local storage timing delay
+    const meRes = await api.get('/auth/me', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
     localStorage.setItem('user', JSON.stringify(meRes.data))
     setUser(meRes.data)
     return meRes.data
