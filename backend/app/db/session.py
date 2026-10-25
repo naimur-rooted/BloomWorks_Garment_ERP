@@ -23,7 +23,7 @@ def _create_resilient_engine():
             db_url = "sqlite:////tmp/garment_erp.db"
 
     if db_url.startswith("sqlite"):
-        connect_args = {"check_same_thread": False}
+        connect_args = {"check_same_thread": False, "timeout": 15}
     else:
         connect_args = {"connect_timeout": 3}
 
@@ -39,7 +39,7 @@ def _create_resilient_engine():
         return eng
     except Exception as e:
         print(f"[DB Notice] Connection test failed for {db_url}: {e}. Falling back to SQLite /tmp.")
-        return create_engine("sqlite:////tmp/garment_erp.db", connect_args={"check_same_thread": False})
+        return create_engine("sqlite:////tmp/garment_erp.db", connect_args={"check_same_thread": False, "timeout": 15})
 
 
 engine = _create_resilient_engine()

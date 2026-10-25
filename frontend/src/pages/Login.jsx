@@ -1,24 +1,40 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
-import { Lock, User, AlertCircle, ArrowRight, Sparkles, KeyRound } from 'lucide-react'
+import { Lock, User, AlertCircle, ArrowRight, Sparkles, KeyRound, CheckCircle2, RefreshCw } from 'lucide-react'
 import ThemeToggle from '../components/ui/ThemeToggle'
+import api from '../services/api'
 
 export default function Login() {
   const [username, setUsername] = useState('admin')
   const [password, setPassword] = useState('admin123')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [statusStep, setStatusStep] = useState('')
+  const [backendStatus, setBackendStatus] = useState('checking')
   const { user, login } = useAuth()
   const navigate = useNavigate()
 
   useEffect(() => {
-    // If user is already authenticated, redirect to dashboard immediately
+    // Check if user is already authenticated
     const token = localStorage.getItem('token')
     const savedUser = localStorage.getItem('user')
     if (user || (token && savedUser)) {
       window.location.replace('/')
+      return
     }
+
+    // Probe backend connection
+    api
+      .get('/health')
+      .then((res) => {
+        if (res.data?.status === 'ok') {
+          setBackendStatus('connected')
+        } else {
+          setBackendStatus('degraded')
+        }
+      })
+      .catch(() => setBackendStatus('offline'))
   }, [user])
 
   const handleSubmit = async (e) => {
@@ -26,23 +42,27 @@ export default function Login() {
     if (loading) return
     setLoading(true)
     setError('')
+    setStatusStep('Authenticating credentials...')
     try {
+      setStatusStep('Verifying user token...')
       await login(username, password)
+      setStatusStep('Loading Executive Dashboard...')
       window.location.replace('/')
     } catch (err) {
       console.error('Login error:', err)
       const detail = err.response?.data?.detail
       if (detail) {
-        setError(detail)
+        setError(`Authentication failed: ${detail}`)
       } else if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
         setError('Server took too long to respond. The cloud service may be cold-starting. Please click to retry.')
       } else if (err.message?.includes('Network Error')) {
-        setError('Network error connecting to backend. Please check your connection and retry.')
+        setError('Network error connecting to backend API. Please check your connection and retry.')
       } else {
-        setError('Authentication failed. Please verify credentials or retry.')
+        setError(err.message || 'Authentication failed. Please verify credentials.')
       }
     } finally {
       setLoading(false)
+      setStatusStep('')
     }
   }
 
@@ -52,21 +72,24 @@ export default function Login() {
     setPassword('admin123')
     setLoading(true)
     setError('')
+    setStatusStep('Logging in as System Administrator...')
     try {
       await login('admin', 'admin123')
+      setStatusStep('Authorized! Launching Executive Dashboard...')
       window.location.replace('/')
     } catch (err) {
       console.error('Demo login error:', err)
       const detail = err.response?.data?.detail
       if (detail) {
-        setError(detail)
+        setError(`Demo sign-in failed: ${detail}`)
       } else if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
         setError('Server cold start took too long. Please click again to retry.')
       } else {
-        setError('Demo authentication failed. Please retry in a few moments.')
+        setError(err.message || 'Demo authentication failed. Please retry in a few moments.')
       }
     } finally {
       setLoading(false)
+      setStatusStep('')
     }
   }
 
@@ -134,12 +157,19 @@ export default function Login() {
               </div>
             )}
 
+            {statusStep && (
+              <div className="p-2.5 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 rounded-lg text-xs flex items-center gap-2 font-medium">
+                <RefreshCw size={13} className="shrink-0 animate-spin" />
+                <span>{statusStep}</span>
+              </div>
+            )}
+
             <button
               type="submit"
               disabled={loading}
               className="w-full btn-primary py-2.5 flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer"
             >
-              <span>{loading ? 'Authenticating...' : 'Sign In'}</span>
+              <span>{loading ? (statusStep || 'Authenticating...') : 'Sign In'}</span>
               <ArrowRight size={14} />
             </button>
           </form>
@@ -163,7 +193,7 @@ export default function Login() {
               className="w-full py-2.5 px-4 rounded-xl border border-blue-500/30 bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-emerald-500/10 hover:from-blue-500/20 hover:via-indigo-500/20 hover:to-emerald-500/20 text-blue-700 dark:text-blue-300 font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all duration-150 active:scale-[0.99] group cursor-pointer"
             >
               <Sparkles size={14} className="text-blue-600 dark:text-blue-400 group-hover:rotate-12 transition-transform" />
-              <span>{loading ? 'Authenticating as Demo Admin...' : 'Instant Demo Login (System Admin)'}</span>
+              <span>{loading ? (statusStep || 'Authenticating as Demo Admin...') : 'Instant Demo Login (System Admin)'}</span>
             </button>
 
             <div className="mt-2 text-center">
@@ -175,9 +205,25 @@ export default function Login() {
 
           <div className="mt-6 pt-4 border-t border-slate-200/60 dark:border-slate-800/60 flex items-center justify-between text-[11px] text-slate-500 font-mono">
             <span>Terminal: DHAKA-01</span>
-            <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              Node Live
+            <span className="font-semibold flex items-center gap-1.5">
+              {backendStatus === 'connected' && (
+                <>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  <span className="text-emerald-600 dark:text-emerald-400">API Online</span>
+                </>
+              )}
+              {backendStatus === 'checking' && (
+                <>
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                  <span className="text-amber-500">Connecting...</span>
+                </>
+              )}
+              {backendStatus === 'offline' && (
+                <>
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                  <span className="text-rose-500">API Offline</span>
+                </>
+              )}
             </span>
           </div>
         </div>
