@@ -11,17 +11,21 @@ def _create_resilient_engine():
 
     # In serverless environments (e.g. Vercel)
     if os.environ.get("VERCEL"):
-        # If DATABASE_URL is localhost, unconfigured, or internal Render host (unreachable from Vercel)
+        # If DATABASE_URL is localhost, unconfigured, or internal/Render host (unreachable or sleeping)
         if (
             "localhost" in db_url
             or "127.0.0.1" in db_url
             or not db_url
             or "sqlite" in db_url
-            or "dpg-dam1rm67bikc73811cc0-a/" in db_url
+            or "dpg-dam1rm67bikc73811cc0-a" in db_url
+            or "render.com" in db_url
         ):
             db_url = "sqlite:////tmp/garment_erp.db"
 
-    connect_args = {"check_same_thread": False} if db_url.startswith("sqlite") else {}
+    if db_url.startswith("sqlite"):
+        connect_args = {"check_same_thread": False}
+    else:
+        connect_args = {"connect_timeout": 3}
 
     try:
         eng = create_engine(
