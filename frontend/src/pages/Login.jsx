@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
-import { Lock, User, AlertCircle, ArrowRight, Sparkles, KeyRound, CheckCircle2, RefreshCw } from 'lucide-react'
+import { Lock, User, AlertCircle, ArrowRight, Sparkles, KeyRound, RefreshCw } from 'lucide-react'
 import ThemeToggle from '../components/ui/ThemeToggle'
 import api from '../services/api'
 
@@ -16,11 +16,11 @@ export default function Login() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    // Check if user is already authenticated
+    // If user is already authenticated, navigate to dashboard immediately
     const token = localStorage.getItem('token')
     const savedUser = localStorage.getItem('user')
     if (user || (token && savedUser)) {
-      window.location.replace('/')
+      navigate('/', { replace: true })
       return
     }
 
@@ -35,7 +35,7 @@ export default function Login() {
         }
       })
       .catch(() => setBackendStatus('offline'))
-  }, [user])
+  }, [user, navigate])
 
   const handleSubmit = async (e) => {
     if (e) e.preventDefault()
@@ -44,10 +44,14 @@ export default function Login() {
     setError('')
     setStatusStep('Authenticating credentials...')
     try {
-      setStatusStep('Verifying user token...')
       await login(username, password)
-      setStatusStep('Loading Executive Dashboard...')
-      window.location.replace('/')
+      setStatusStep('Redirecting to Dashboard...')
+      navigate('/', { replace: true })
+      setTimeout(() => {
+        if (window.location.pathname === '/login') {
+          window.location.href = '/'
+        }
+      }, 500)
     } catch (err) {
       console.error('Login error:', err)
       const detail = err.response?.data?.detail
@@ -72,11 +76,16 @@ export default function Login() {
     setPassword('admin123')
     setLoading(true)
     setError('')
-    setStatusStep('Logging in as System Administrator...')
+    setStatusStep('Authenticating as System Administrator...')
     try {
       await login('admin', 'admin123')
-      setStatusStep('Authorized! Launching Executive Dashboard...')
-      window.location.replace('/')
+      setStatusStep('Redirecting to Dashboard...')
+      navigate('/', { replace: true })
+      setTimeout(() => {
+        if (window.location.pathname === '/login') {
+          window.location.href = '/'
+        }
+      }, 500)
     } catch (err) {
       console.error('Demo login error:', err)
       const detail = err.response?.data?.detail

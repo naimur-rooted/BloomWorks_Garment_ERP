@@ -23,6 +23,7 @@ from app.models.tna import TNAStatus
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
+    user: Optional[UserOut] = None
 
 
 class LoginRequest(BaseModel):
