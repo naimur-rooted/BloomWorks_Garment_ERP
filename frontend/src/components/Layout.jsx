@@ -29,6 +29,7 @@ import {
   Search,
   Clock,
   ChevronRight,
+  ChevronDown,
 } from 'lucide-react'
 import { useAuth } from '../auth/AuthContext'
 import ThemeToggle from './ui/ThemeToggle'
@@ -208,6 +209,61 @@ function Layout() {
 
   const navSections = getNavSections(user?.role || 'Admin')
 
+  // Foldable dropdown state: by default, expand only the section containing current route (or Overview)
+  const [openSections, setOpenSections] = useState(() => {
+    const initial = {}
+    navSections.forEach((s) => {
+      if (s.items.some((i) => i.to === location.pathname)) {
+        initial[s.title] = true
+      }
+    })
+    if (Object.keys(initial).length === 0) {
+      initial['Overview'] = true
+    }
+    return initial
+  })
+
+  // Auto-expand section when user navigates to an item within it
+  useEffect(() => {
+    navSections.forEach((s) => {
+      if (s.items.some((i) => i.to === location.pathname)) {
+        setOpenSections((prev) => ({
+          ...prev,
+          [s.title]: true,
+        }))
+      }
+    })
+  }, [location.pathname])
+
+  const toggleSection = (title) => {
+    setOpenSections((prev) => ({
+      ...prev,
+      [title]: !prev[title],
+    }))
+  }
+
+  const areAllOpen = navSections.every((s) => openSections[s.title])
+
+  const toggleAll = () => {
+    if (areAllOpen) {
+      // Fold all except currently active
+      const next = {}
+      navSections.forEach((s) => {
+        if (s.items.some((i) => i.to === location.pathname)) {
+          next[s.title] = true
+        }
+      })
+      setOpenSections(next)
+    } else {
+      // Expand all
+      const next = {}
+      navSections.forEach((s) => {
+        next[s.title] = true
+      })
+      setOpenSections(next)
+    }
+  }
+
   const activeItem = navSections
     .flatMap((s) => s.items)
     .find((i) => i.to === location.pathname)
@@ -242,77 +298,126 @@ function Layout() {
       </div>
 
       {/* Navigation Sections */}
-      <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-4">
-        {navSections.map((section) => (
-          <div key={section.title} className="space-y-1.5">
-            {/* Colorful & Bold Main Menu Header Banner */}
-            <div
-              className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg border shadow-xs transition-all ${section.bg} ${section.border}`}
-            >
-              <div className="flex items-center gap-2 min-w-0">
-                <span className={`w-2 h-2 rounded-full ${section.dot} shadow-xs shrink-0 ring-2 ring-white/80 dark:ring-slate-900/80`} />
-                <span className={`text-[11px] font-black uppercase tracking-wider ${section.text} truncate`}>
-                  {section.title}
-                </span>
-              </div>
-              <span className={`text-[10px] font-extrabold px-1.5 py-0.2 rounded-md ${section.badge} border ${section.border}`}>
-                {section.items.length}
-              </span>
-            </div>
+      <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-2">
+        {/* Quick Fold / Expand Controls */}
+        <div className="flex items-center justify-between px-1 pb-1 border-b border-slate-200/50 dark:border-slate-800/50">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            Navigation Modules
+          </span>
+          <button
+            type="button"
+            onClick={toggleAll}
+            className="text-[10px] font-semibold text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer"
+          >
+            {areAllOpen ? 'Fold All' : 'Expand All'}
+          </button>
+        </div>
 
-            {/* Sub-menu items indented with tree line */}
-            <div className="space-y-0.5 pl-2 border-l border-slate-200/70 dark:border-slate-800/70 ml-2.5">
-              {section.items.map((item) => {
-                const Icon = item.icon
-                const isCurrent = location.pathname === item.to
-                return (
-                  <NavLink
-                    key={item.to}
-                    to={item.to}
-                    onClick={closeSidebar}
-                    className={({ isActive }) =>
-                      `group flex items-center px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                        isActive
-                          ? 'bg-blue-600/10 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 font-bold border-l-2 border-blue-600 dark:border-blue-400 shadow-xs'
-                          : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100/70 dark:hover:bg-slate-800/60'
-                      }`
-                    }
-                  >
-                    <Icon
-                      size={15}
-                      className={`mr-2.5 shrink-0 transition-colors ${
-                        isCurrent
-                          ? 'text-blue-600 dark:text-blue-400'
-                          : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-200'
-                      }`}
-                    />
-                    <span className="truncate">{item.label}</span>
-                    {item.to === '/bundle-tracking' && (
-                      <span className="ml-auto text-[9px] bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 px-1.5 py-0.5 rounded font-bold">
-                        SFC
-                      </span>
-                    )}
-                    {item.to === '/payroll' && (
-                      <span className="ml-auto text-[9px] bg-teal-100 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300 border border-teal-300 dark:border-teal-800 px-1.5 py-0.5 rounded font-bold">
-                        ৳ BDT
-                      </span>
-                    )}
-                    {item.to === '/orders' && (
-                      <span className="ml-auto text-[9px] bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-300 dark:border-blue-800 px-1.5 py-0.5 rounded font-bold">
-                        FOB
-                      </span>
-                    )}
-                    {item.to === '/quality' && (
-                      <span className="ml-auto text-[9px] bg-amber-100 text-amber-900 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300 dark:border-amber-800 px-1.5 py-0.5 rounded font-bold">
-                        AQL
-                      </span>
-                    )}
-                  </NavLink>
-                )
-              })}
+        {navSections.map((section) => {
+          const isOpen = Boolean(openSections[section.title])
+          const hasActiveChild = section.items.some((i) => i.to === location.pathname)
+
+          return (
+            <div key={section.title} className="space-y-1">
+              {/* Colorful & Bold Main Menu Header Banner (Clickable Accordion Dropdown) */}
+              <button
+                type="button"
+                onClick={() => toggleSection(section.title)}
+                className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg border shadow-xs transition-all cursor-pointer text-left ${section.bg} ${section.border} hover:brightness-95 active:scale-[0.99]`}
+                aria-expanded={isOpen}
+              >
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className={`w-2 h-2 rounded-full ${section.dot} shadow-xs shrink-0 ring-2 ring-white/80 dark:ring-slate-900/80`} />
+                  <span className={`text-[11px] font-black uppercase tracking-wider ${section.text} truncate`}>
+                    {section.title}
+                  </span>
+                  {hasActiveChild && !isOpen && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400 animate-pulse shrink-0" title="Active page inside" />
+                  )}
+                </div>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <span className={`text-[10px] font-extrabold px-1.5 py-0.2 rounded-md ${section.badge} border ${section.border}`}>
+                    {section.items.length}
+                  </span>
+                  <ChevronDown
+                    size={14}
+                    className={`${section.text} transition-transform duration-200 ${
+                      isOpen ? 'rotate-180' : 'rotate-0'
+                    }`}
+                  />
+                </div>
+              </button>
+
+              {/* Sub-menu items indented with tree line (Foldable with transition) */}
+              <div
+                className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'
+                }`}
+              >
+                <div className="space-y-0.5 pl-2 border-l border-slate-200/70 dark:border-slate-800/70 ml-2.5 py-1">
+                  {section.items.map((item) => {
+                    const Icon = item.icon
+                    const isCurrent = location.pathname === item.to
+                    return (
+                      <NavLink
+                        key={item.to}
+                        to={item.to}
+                        onClick={closeSidebar}
+                        className={({ isActive }) =>
+                          `group flex items-center px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                            isActive
+                              ? 'bg-blue-600/10 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 font-bold border-l-2 border-blue-600 dark:border-blue-400 shadow-xs'
+                              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100/70 dark:hover:bg-slate-800/60'
+                          }`
+                        }
+                      >
+                        <Icon
+                          size={15}
+                          className={`mr-2.5 shrink-0 transition-colors ${
+                            isCurrent
+                              ? 'text-blue-600 dark:text-blue-400'
+                              : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-200'
+                          }`}
+                        />
+                        <span className="truncate">{item.label}</span>
+                        {item.to === '/bundle-tracking' && (
+                          <span className="ml-auto text-[9px] bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 px-1.5 py-0.5 rounded font-bold">
+                            SFC
+                          </span>
+                        )}
+                        {item.to === '/payroll' && (
+                          <span className="ml-auto text-[9px] bg-teal-100 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300 border border-teal-300 dark:border-teal-800 px-1.5 py-0.5 rounded font-bold">
+                            ৳ BDT
+                          </span>
+                        )}
+                        {item.to === '/orders' && (
+                          <span className="ml-auto text-[9px] bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-300 dark:border-blue-800 px-1.5 py-0.5 rounded font-bold">
+                            FOB
+                          </span>
+                        )}
+                        {item.to === '/quality' && (
+                          <span className="ml-auto text-[9px] bg-amber-100 text-amber-900 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300 dark:border-amber-800 px-1.5 py-0.5 rounded font-bold">
+                            AQL
+                          </span>
+                        )}
+                        {item.to === '/deliveries' && (
+                          <span className="ml-auto text-[9px] bg-cyan-100 text-cyan-800 dark:bg-cyan-950/60 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-800 px-1.5 py-0.5 rounded font-bold">
+                            GP/DC
+                          </span>
+                        )}
+                        {item.to === '/commercial' && (
+                          <span className="ml-auto text-[9px] bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-300 dark:border-rose-800 px-1.5 py-0.5 rounded font-bold">
+                            LC
+                          </span>
+                        )}
+                      </NavLink>
+                    )
+                  })}
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </nav>
 
       {/* User & Terminal Profile Footer */}
