@@ -1,5 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException
+from typing import Optional
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 
 from app.api.deps import get_current_user
 from app.db.session import get_db
@@ -27,9 +29,57 @@ def _to_style(db: Session, style: Style) -> StyleOut:
     return out
 
 
-@router.get("", response_model=list[StyleOut])
-def list_styles(db: Session = Depends(get_db), _: User = Depends(get_current_user)):
+@router.get("/summary")
+def get_styles_summary(db: Session = Depends(get_db), _: User = Depends(get_current_user)):
     styles = db.query(Style).all()
+    total = len(styles)
+    new_style = sum(1 for s in styles if (s.lifecycle_stage or "").upper() in ["NEW", "NEW_STYLE"])
+    design = sum(1 for s in styles if (s.lifecycle_stage or "").upper() in ["DESIGN", "DESIGN_INNOVATION"])
+    pd = sum(1 for s in styles if (s.lifecycle_stage or "").upper() in ["PD", "PRODUCT_DEV", "PRODUCT_DEVELOPMENT"])
+    projection = sum(1 for s in styles if (s.lifecycle_stage or "").upper() in ["PROJECTION"])
+    on_order = sum(1 for s in styles if (s.lifecycle_stage or "").upper() in ["ON_ORDER", "ON ORDER"])
+    key_styles = sum(1 for s in styles if (s.lifecycle_stage or "").upper() in ["KEY_STYLES", "KEY STYLES"] or (s.risk_priority or "").upper() == "HIGH")
+    pending_pos = sum(1 for s in styles if (s.lifecycle_stage or "").upper() in ["PENDING_POS", "PENDING_PO"])
+    un_shipped = sum(1 for s in styles if (s.lifecycle_stage or "").upper() in ["UN_SHIPPED", "UNSHIPPED", "IN_PRODUCTION"])
+    return {
+        "total": total,
+        "new_style": new_style,
+        "design_innovation": design,
+        "product_dev": pd,
+        "projection": projection,
+        "on_order": on_order,
+        "key_styles": key_styles,
+        "pending_pos": pending_pos,
+        "un_shipped": un_shipped,
+    }
+
+
+@router.get("", response_model=list[StyleOut])
+def list_styles(
+    lifecycle_stage: Optional[str] = Query(None),
+    buyer_id: Optional[int] = Query(None),
+    category: Optional[str] = Query(None),
+    search: Optional[str] = Query(None),
+    db: Session = Depends(get_db),
+    _: User = Depends(get_current_user),
+):
+    query = db.query(Style)
+    if lifecycle_stage:
+        query = query.filter(Style.lifecycle_stage.ilike(f"%{lifecycle_stage}%"))
+    if buyer_id:
+        query = query.filter(Style.buyer_id == buyer_id)
+    if category:
+        query = query.filter(Style.category.ilike(f"%{category}%"))
+    if search:
+        s_filter = or_(
+            Style.style_no.ilike(f"%{search}%"),
+            Style.name.ilike(f"%{search}%"),
+            Style.merchant_style_no.ilike(f"%{search}%"),
+            Style.pd_merchant_name.ilike(f"%{search}%"),
+            Style.prod_merchant_name.ilike(f"%{search}%"),
+        )
+        query = query.filter(s_filter)
+    styles = query.order_by(Style.id.desc()).all()
     return [_to_style(db, s) for s in styles]
 
 

@@ -40,6 +40,11 @@ from app.models.enterprise_models import (
     CommercialLC,
     EmployeeSalaryRecord,
 )
+from app.models.logistics import (
+    DeliveryChallan,
+    GatePass,
+    MoneyReceive,
+)
 
 __all__ = [
     "Role",
@@ -85,4 +90,8 @@ __all__ = [
     "PackingPlan",
     "CriticalPathMilestone",
     "CommercialLC",
+    "EmployeeSalaryRecord",
+    "DeliveryChallan",
+    "GatePass",
+    "MoneyReceive",
 ]

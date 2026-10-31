@@ -54,6 +54,49 @@ def _ensure_tables_and_seed(eng):
         from app.db.base import Base
         Base.metadata.create_all(bind=eng)
 
+        # Ensure any missing SQLite columns on existing tables are migrated safely
+        try:
+            with eng.connect() as conn:
+                res = conn.exec_driver_sql("PRAGMA table_info(styles)")
+                existing_cols = {row[1] for row in res.fetchall()}
+                style_new_cols = [
+                    ('style_type', 'VARCHAR(50)'),
+                    ('brand', 'VARCHAR(100)'),
+                    ('season', 'VARCHAR(50)'),
+                    ('sub_category', 'VARCHAR(100)'),
+                    ('gender', 'VARCHAR(50)'),
+                    ('source_allocation', 'VARCHAR(50)'),
+                    ('sam_minutes', 'NUMERIC(6, 2)'),
+                    ('target_efficiency_pct', 'NUMERIC(5, 2)'),
+                    ('creation_date', 'DATE'),
+                    ('ocd_date', 'DATE'),
+                    ('pcd_date', 'DATE'),
+                    ('ex_factory_date', 'DATE'),
+                    ('pd_merchant_name', 'VARCHAR(150)'),
+                    ('prod_merchant_name', 'VARCHAR(150)'),
+                    ('lifecycle_stage', 'VARCHAR(50)'),
+                    ('risk_priority', 'VARCHAR(50)'),
+                    ('risk_criterion', 'VARCHAR(255)'),
+                    ('tna_progress_pct', 'INTEGER'),
+                    ('active_milestone', 'VARCHAR(150)'),
+                    ('costing_qty', 'NUMERIC(12, 2)'),
+                    ('projection_qty', 'NUMERIC(12, 2)'),
+                    ('placement_qty', 'NUMERIC(12, 2)'),
+                    ('repeat_order', 'BOOLEAN'),
+                    ('target_fob_bdt', 'NUMERIC(10, 2)'),
+                    ('size_range', 'VARCHAR(200)'),
+                    ('size_ratio', 'VARCHAR(100)'),
+                    ('value_additions', 'VARCHAR(255)'),
+                    ('has_lining', 'BOOLEAN'),
+                    ('remarks', 'TEXT'),
+                ]
+                for col_name, col_type in style_new_cols:
+                    if col_name not in existing_cols:
+                        conn.exec_driver_sql(f"ALTER TABLE styles ADD COLUMN {col_name} {col_type}")
+                conn.commit()
+        except Exception as col_err:
+            pass
+
         # Seed default admin user if not present
         from app.models.user import User, Role
         from app.core.security import get_password_hash
@@ -72,6 +115,12 @@ def _ensure_tables_and_seed(eng):
                 session.add(admin)
                 session.commit()
                 print("[DB Notice] Default admin user initialized (admin/admin123).")
+
+            try:
+                from app.db.factory_seed import seed_factory_data
+                seed_factory_data(session)
+            except Exception as seed_err:
+                print(f"[DB Notice] factory seed notice: {seed_err}")
     except Exception as ex:
         print(f"[DB Notice] _ensure_tables_and_seed warning: {ex}")
 

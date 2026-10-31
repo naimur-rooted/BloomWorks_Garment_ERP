@@ -60,9 +60,9 @@ class Material(TimestampMixin, Base):
     code: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     category: Mapped[str] = mapped_column(String(100), nullable=False, default="Fabric")  # Fabric, Thread, Button, Zipper, Label, Accessory, Packaging
-    uom: Mapped[str] = mapped_column(String(20), nullable=False)  # kg, meter, pcs, dozen, roll
+    uom: Mapped[str] = mapped_column(String(20), nullable=False)  # kg, meter, pcs, dozen, roll, cone
     unit_cost: Mapped[Decimal | None] = mapped_column(Numeric(12, 2), default=Decimal("0.00"))
-    currency: Mapped[str] = mapped_column(String(10), nullable=False, default="USD")
+    currency: Mapped[str] = mapped_column(String(10), nullable=False, default="BDT")
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
 
 
@@ -76,6 +76,50 @@ class Style(TimestampMixin, Base):
     category: Mapped[str | None] = mapped_column(String(100))
     image_url: Mapped[str | None] = mapped_column(String(500))
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+
+    # 1. Classification & Garment Hierarchy
+    style_type: Mapped[str] = mapped_column(String(50), nullable=False, default="Bulk")  # Bulk, Sample, Proto
+    brand: Mapped[str | None] = mapped_column(String(100))  # e.g., Divided, Zara Man, Basic
+    season: Mapped[str | None] = mapped_column(String(50), default="SS26")  # SS26, AW26, Monsoon
+    sub_category: Mapped[str | None] = mapped_column(String(100))  # Cargo Pants, Pique Polo
+    gender: Mapped[str] = mapped_column(String(50), nullable=False, default="Men")  # Men, Women, Unisex, Kids
+    source_allocation: Mapped[str] = mapped_column(String(50), nullable=False, default="Inhouse")  # Inhouse, Subcontract
+    
+    # 2. Industrial Engineering (IE) Work Value
+    sam_minutes: Mapped[Decimal] = mapped_column(Numeric(6, 2), nullable=False, default=Decimal("15.00"))
+    target_efficiency_pct: Mapped[Decimal] = mapped_column(Numeric(5, 2), nullable=False, default=Decimal("65.00"))
+    
+    # 3. Critical Milestones
+    creation_date: Mapped[date | None] = mapped_column(Date)
+    ocd_date: Mapped[date | None] = mapped_column(Date)  # Order Confirm Date
+    pcd_date: Mapped[date | None] = mapped_column(Date)  # Planned Cut Date
+    ex_factory_date: Mapped[date | None] = mapped_column(Date)
+    
+    # 4. Merchandising Ownership
+    pd_merchant_name: Mapped[str] = mapped_column(String(150), nullable=False, default="Sanat Kumar")
+    prod_merchant_name: Mapped[str] = mapped_column(String(150), nullable=False, default="Sheela Singh")
+    
+    # 5. Lifecycle & Risk Tracking (The 9-Stage Pipeline)
+    lifecycle_stage: Mapped[str] = mapped_column(String(50), nullable=False, default="ON_ORDER")  
+    # NEW_STYLE, DESIGN_INNOVATION, PRODUCT_DEVELOPMENT, PROJECTION, ON_ORDER, KEY_STYLE, PENDING_PO, UN_SHIPPED
+    risk_priority: Mapped[str] = mapped_column(String(50), nullable=False, default="Medium")  # Low, Medium, High, Critical
+    risk_criterion: Mapped[str | None] = mapped_column(String(200))
+    tna_progress_pct: Mapped[int] = mapped_column(Integer, nullable=False, default=35)
+    active_milestone: Mapped[str] = mapped_column(String(150), nullable=False, default="BOM Confirmation")
+    
+    # 6. Quantities & Commercials (in BDT ৳)
+    costing_qty: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False, default=Decimal("10000.00"))
+    projection_qty: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False, default=Decimal("12000.00"))
+    placement_qty: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False, default=Decimal("10000.00"))
+    repeat_order: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    target_fob_bdt: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False, default=Decimal("850.00"))
+    
+    # 7. Manufacturing Specifications & Value Additions
+    size_range: Mapped[str] = mapped_column(String(100), nullable=False, default="S - XXL")
+    size_ratio: Mapped[str] = mapped_column(String(100), nullable=False, default="1:2:2:1")
+    value_additions: Mapped[str | None] = mapped_column(String(255))  # Enzyme Wash, Silicon Wash, Chest Print
+    has_lining: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    remarks: Mapped[str | None] = mapped_column(Text)
 
     buyer: Mapped["Buyer | None"] = relationship()
     variants: Mapped[list["StyleVariant"]] = relationship(back_populates="style", cascade="all, delete-orphan")

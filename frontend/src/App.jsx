@@ -29,6 +29,8 @@ import Reports from './pages/Reports'
 import UserManagement from './pages/UserManagement'
 import BundleTracking from './pages/BundleTracking'
 import Payroll from './pages/Payroll'
+import Deliveries from './pages/Deliveries'
+import Commercial from './pages/Commercial'
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth()
@@ -95,6 +97,8 @@ function App() {
         <Route path="quality" element={<Quality />} />
         <Route path="packing" element={<Packing />} />
         <Route path="shipments" element={<Shipments />} />
+        <Route path="deliveries" element={<Deliveries />} />
+        <Route path="commercial" element={<Commercial />} />
         <Route path="tna" element={<TNA />} />
         <Route path="payroll" element={<Payroll />} />
         <Route path="reports" element={<Reports />} />

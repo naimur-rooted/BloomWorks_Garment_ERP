@@ -148,6 +148,7 @@ const getNavSections = (role) => {
       items: [
         { to: '/quality', label: 'AQL 2.5 Quality Audits', icon: ShieldCheck },
         { to: '/packing', label: 'Ratio Packing & CBM', icon: PackageCheck },
+        { to: '/deliveries', label: 'Order Delivery & Gate Pass', icon: Truck },
         { to: '/shipments', label: 'Commercial Cargo', icon: Ship },
       ],
     })
@@ -176,7 +177,10 @@ const getNavSections = (role) => {
     bg: 'bg-rose-50/90 dark:bg-rose-950/40',
     border: 'border-rose-200/90 dark:border-rose-800/60',
     badge: 'bg-rose-100 text-rose-700 dark:bg-rose-900/60 dark:text-rose-300',
-    items: [{ to: '/reports', label: 'EXIM & Job Costing (BDT)', icon: BarChart3 }],
+    items: [
+      { to: '/commercial', label: 'Commercial & Money Receive (৳)', icon: Banknote },
+      { to: '/reports', label: 'EXIM & Job Costing (BDT)', icon: BarChart3 },
+    ],
   })
 
   return sections

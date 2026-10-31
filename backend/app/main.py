@@ -39,6 +39,7 @@ from app.modules.tna.router import router as tna_router
 from app.modules.reports.router import router as reports_router
 from app.modules.tracking.router import router as tracking_router
 from app.modules.enterprise.router import router as enterprise_router
+from app.modules.logistics.router import router as logistics_router
 from app.core.security import get_password_hash
 from app.models.user import Role, User
 from app.db.session import SessionLocal
@@ -88,6 +89,7 @@ app.include_router(tna_router, prefix=API_PREFIX)
 app.include_router(reports_router, prefix=API_PREFIX)
 app.include_router(tracking_router, prefix=API_PREFIX)
 app.include_router(enterprise_router, prefix=API_PREFIX)
+app.include_router(logistics_router, prefix=API_PREFIX)
 
 
 @app.get("/")
