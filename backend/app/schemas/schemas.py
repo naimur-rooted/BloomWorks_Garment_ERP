@@ -668,6 +668,7 @@ class FinishingEntryCreate(CuttingEntryCreate):
 class CuttingEntryOut(BaseModel):
     id: int
     work_order_id: int
+    wo_number: Optional[str] = None
     entry_date: date
     quantity: int
     rejection_qty: int

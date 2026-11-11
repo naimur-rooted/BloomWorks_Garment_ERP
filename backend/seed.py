@@ -316,8 +316,8 @@ def seed_garment_demo_workflow(db: Session):
                 ("Fabric Lab Dip & Strike-Off Approval", o_date + timedelta(days=5), o_date + timedelta(days=10), "Completed"),
                 ("Raw Materials In-House & 4-Point Inspection", o_date + timedelta(days=15), o_date + timedelta(days=22), "Completed" if status == OrderStatus.IN_PRODUCTION else "On Track"),
                 ("Pre-Production (PP) Meeting & Pilot Run", o_date + timedelta(days=25), o_date + timedelta(days=28), "Completed" if status == OrderStatus.IN_PRODUCTION else "On Track"),
-                ("Bulk Spreading & Precision Cutting", o_date + timedelta(days=30), o_date + timedelta(days=38), "In Progress" if status == OrderStatus.IN_PRODUCTION else "Pending"),
-                ("Sewing Line Loading & Assembly", o_date + timedelta(days=38), o_date + timedelta(days=55), "In Progress" if status == OrderStatus.IN_PRODUCTION else "Pending"),
+                ("Bulk Spreading & Precision Cutting", o_date + timedelta(days=30), o_date + timedelta(days=38), "On Track" if status == OrderStatus.IN_PRODUCTION else "Pending"),
+                ("Sewing Line Loading & Assembly", o_date + timedelta(days=38), o_date + timedelta(days=55), "On Track" if status == OrderStatus.IN_PRODUCTION else "Pending"),
                 ("Wet Processing / Laundry & Ironing", o_date + timedelta(days=55), o_date + timedelta(days=65), "Pending"),
                 ("Final Pre-Shipment Quality Audit (AQL 2.5)", d_date - timedelta(days=7), d_date - timedelta(days=5), "Pending"),
                 ("Ex-Factory Handover & Vessel Departure", d_date - timedelta(days=3), d_date, "On Track"),
@@ -478,6 +478,65 @@ def seed_garment_demo_workflow(db: Session):
                 operator="Rafiqul Alam (Finishing Supervisor)",
                 remarks="Steam Ironing & Hangtag Attaching",
             ))
+            db.commit()
+
+    # 9. Quality Inspection, Packing, Shipment for PO-2026-001
+    ord_hm = orders.get("PO-2026-001")
+    if ord_hm:
+        qc = db.query(QualityInspection).filter(QualityInspection.inspection_number == "QC-2026-001").first()
+        if not qc:
+            qc = QualityInspection(
+                inspection_number="QC-2026-001",
+                qc_type="Final",
+                status="Passed",
+                order_id=ord_hm.id,
+                inspected_qty=3200,
+                passed_qty=3160,
+                rejected_qty=40,
+                inspector="Monir Hossain (Chief Quality Inspector)",
+                inspection_date=ord_hm.order_date + timedelta(days=22),
+                remarks="AQL 2.5 Major/Minor limits strictly passed for export.",
+            )
+            db.add(qc)
+            db.commit()
+            db.refresh(qc)
+            db.add(Defect(inspection_id=qc.id, defect_type="Broken Stitch", quantity=25, remarks="Fixed on rework station"))
+            db.add(Defect(inspection_id=qc.id, defect_type="Oil Stain", quantity=15, remarks="Spot cleaned"))
+            db.commit()
+
+        pl = db.query(PackingList).filter(PackingList.packing_number == "PL-2026-001").first()
+        if not pl:
+            sv = db.query(StyleVariant).filter(StyleVariant.style_id == ord_hm.style_id).first()
+            pl = PackingList(
+                packing_number="PL-2026-001",
+                order_id=ord_hm.id,
+                style_variant_id=sv.id if sv else 1,
+                packing_date=ord_hm.order_date + timedelta(days=24),
+                total_cartons=80,
+                total_quantity=3200,
+                status="Packed",
+                warehouse="Chittagong Port CFS Warehouse",
+                remarks="Solid Size / Solid Color Assortment in 7-ply export cartons",
+            )
+            db.add(pl)
+            db.commit()
+            db.refresh(pl)
+
+        shp = db.query(Shipment).filter(Shipment.shipment_number == "SHP-2026-001").first()
+        if not shp:
+            shp = Shipment(
+                shipment_number="SHP-2026-001",
+                order_id=ord_hm.id,
+                packing_list_id=pl.id if pl else None,
+                shipment_date=ord_hm.delivery_date - timedelta(days=2),
+                carrier="Maersk Line (Vessel: MAERSK MC-KINNEY)",
+                tracking_number="MSK-CTG-982341",
+                port_of_loading="Chittagong Port (BDCGP)",
+                port_of_discharge="Gothenburg, Sweden (SEGOT)",
+                status="Planned",
+                remarks="FOB Chittagong port handover under B/L #MSK2026-992",
+            )
+            db.add(shp)
             db.commit()
 
     print("--> Master Garment ERP Workflow Successfully Seeded with 6 Buyers, 8 Suppliers, 6 Styles, and Orders!")

@@ -35,6 +35,7 @@ from app.services.inventory_service import post_inventory_transaction
 router = APIRouter(tags=["Procurement"])
 
 pr_router = APIRouter(prefix="/requisitions", tags=["Purchase Requisitions"])
+pr_alias_router = APIRouter(prefix="/purchase-requisitions", tags=["Purchase Requisitions"])
 po_router = APIRouter(prefix="/purchase-orders", tags=["Purchase Orders"])
 gr_router = APIRouter(prefix="/goods-receipts", tags=["Goods Receipts"])
 
@@ -168,6 +169,15 @@ def delete_requisition(pr_id: int, db: Session = Depends(get_db), _: User = Depe
         raise HTTPException(status_code=404, detail="Requisition not found")
     db.delete(pr)
     db.commit()
+
+
+# Alias routes for /purchase-requisitions compatibility
+pr_alias_router.add_api_route("", list_requisitions, methods=["GET"], response_model=list[PurchaseRequisitionOut])
+pr_alias_router.add_api_route("", create_requisition, methods=["POST"], response_model=PurchaseRequisitionOut, status_code=201)
+pr_alias_router.add_api_route("/{pr_id}", get_requisition, methods=["GET"], response_model=PurchaseRequisitionOut)
+pr_alias_router.add_api_route("/{pr_id}/submit", submit_requisition, methods=["POST"], response_model=PurchaseRequisitionOut)
+pr_alias_router.add_api_route("/{pr_id}/approve", approve_requisition, methods=["POST"], response_model=PurchaseRequisitionOut)
+pr_alias_router.add_api_route("/{pr_id}", delete_requisition, methods=["DELETE"], status_code=204)
 
 
 # ---------- Purchase Orders ----------

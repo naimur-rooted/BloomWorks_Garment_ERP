@@ -1,7 +1,18 @@
 import os
+import pathlib
+import tempfile
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from app.core.config import settings
+
+
+def _get_fallback_sqlite_url() -> str:
+    """Return a valid SQLite URL that works across Linux, Vercel, macOS, and Windows."""
+    if os.environ.get("VERCEL") or (os.name != "nt" and os.path.isdir("/tmp")):
+        return "sqlite:////tmp/garment_erp.db"
+    backend_dir = pathlib.Path(__file__).resolve().parent.parent.parent
+    db_path = backend_dir / "garment_erp.db"
+    return f"sqlite:///{db_path.as_posix()}"
 
 
 def _create_resilient_engine():
@@ -20,7 +31,7 @@ def _create_resilient_engine():
             or "dpg-dam1rm67bikc73811cc0-a" in db_url
             or "render.com" in db_url
         ):
-            db_url = "sqlite:////tmp/garment_erp.db"
+            db_url = _get_fallback_sqlite_url()
 
     if db_url.startswith("sqlite"):
         connect_args = {"check_same_thread": False, "timeout": 15}
@@ -38,8 +49,9 @@ def _create_resilient_engine():
             pass
         return eng
     except Exception as e:
-        print(f"[DB Notice] Connection test failed for {db_url}: {e}. Falling back to SQLite /tmp.")
-        return create_engine("sqlite:////tmp/garment_erp.db", connect_args={"check_same_thread": False, "timeout": 15})
+        fallback_url = _get_fallback_sqlite_url()
+        print(f"[DB Notice] Connection test failed for {db_url}: {e}. Falling back to SQLite: {fallback_url}")
+        return create_engine(fallback_url, connect_args={"check_same_thread": False, "timeout": 15})
 
 
 engine = _create_resilient_engine()
@@ -132,8 +144,9 @@ def get_db():
             _ensure_tables_and_seed(engine)
             _tables_initialized = True
         except Exception as e:
-            print(f"[DB Notice] Initialization failed on primary engine: {e}. Rebuilding on /tmp SQLite.")
-            engine = create_engine("sqlite:////tmp/garment_erp.db", connect_args={"check_same_thread": False})
+            fallback_url = _get_fallback_sqlite_url()
+            print(f"[DB Notice] Initialization failed on primary engine: {e}. Rebuilding on SQLite: {fallback_url}")
+            engine = create_engine(fallback_url, connect_args={"check_same_thread": False})
             SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
             _ensure_tables_and_seed(engine)
             _tables_initialized = True

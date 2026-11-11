@@ -7,6 +7,7 @@ from app.db.base import Base, TimestampMixin
 
 class TNAStatus(str, Enum):
     PENDING = "Pending"
+    IN_PROGRESS = "In Progress"
     ON_TRACK = "On Track"
     COMPLETED = "Completed"
     OVERDUE = "Overdue"

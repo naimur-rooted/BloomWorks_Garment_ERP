@@ -24,6 +24,7 @@ from app.modules.procurement.router import (
     gr_router,
     po_router,
     pr_router,
+    pr_alias_router,
 )
 from app.modules.production.router import (
     cutting_router,
@@ -75,6 +76,7 @@ app.include_router(bom_router, prefix=API_PREFIX)
 app.include_router(material_requirements_router, prefix=API_PREFIX)
 app.include_router(inventory_router, prefix=API_PREFIX)
 app.include_router(pr_router, prefix=API_PREFIX)
+app.include_router(pr_alias_router, prefix=API_PREFIX)
 app.include_router(po_router, prefix=API_PREFIX)
 app.include_router(gr_router, prefix=API_PREFIX)
 app.include_router(plan_router, prefix=API_PREFIX)

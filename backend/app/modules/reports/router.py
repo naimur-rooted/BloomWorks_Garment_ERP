@@ -19,6 +19,7 @@ router = APIRouter(prefix="/reports", tags=["Reports"])
 
 
 @router.get("/dashboard")
+@router.get("/summary")
 def dashboard(db: Session = Depends(get_db), _: User = Depends(get_current_user)):
     total_orders = db.query(BuyerOrder).count()
     open_orders = db.query(BuyerOrder).filter(BuyerOrder.status.in_([OrderStatus.CONFIRMED, OrderStatus.IN_PRODUCTION])).count()

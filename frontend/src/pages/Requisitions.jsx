@@ -13,7 +13,7 @@ export default function Requisitions() {
 
   const load = () => {
     setLoading(true)
-    api.get('/purchase-requisitions').then((res) => setData(res.data)).catch(console.error).finally(() => setLoading(false))
+    api.get('/requisitions').then((res) => setData(res.data)).catch(console.error).finally(() => setLoading(false))
     api.get('/materials').then((res) => setMaterials(res.data)).catch(console.error)
   }
 
@@ -31,10 +31,9 @@ export default function Requisitions() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    await api.post('/purchase-requisitions', { ...form, items: form.items })
+    await api.post('/requisitions', { ...form, items: form.items })
     setIsOpen(false)
     setForm({ pr_number: '', order_id: '', requested_by: '', required_date: '', items: [] })
-    setItems([])
     load()
   }
 
